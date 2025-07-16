@@ -36,19 +36,42 @@ export async function buildApi(options = {}) {
   const db = new DatabaseManager(dbPath);
   await db.initialize();
   fastify.decorate('db', db);
-  const qaHandler = createQAHandler(db);
+
+  // Allow injecting a QA handler for testing
+  const qaHandler = options.qaHandler || createQAHandler(db);
   fastify.decorate('qaHandler', qaHandler);
 
   // JWT verification preHandler
   const verifyJwt = buildVerifyJwt(process.env.JWT_SECRET || 'changeme');
 
   // Simple health route
-  fastify.get('/health', async () => {
+  fastify.get('/health', {
+    schema: {
+      tags: ['Utility'],
+      summary: 'Health Check',
+      description: 'Returns `{ status: "ok" }` when the API is healthy.',
+      response: {
+        200: {
+          type: 'object',
+          properties: { status: { type: 'string' } }
+        }
+      }
+    }
+  }, async () => {
     return { status: 'ok' };
   });
 
   // Metrics route
-  fastify.get('/metrics', async (_req, reply) => {
+  fastify.get('/metrics', {
+    schema: {
+      tags: ['Utility'],
+      summary: 'Prometheus Metrics',
+      description: 'Exposes Prometheus metrics in the standard text format.',
+      response: {
+        200: { type: 'string', description: 'Prometheus metrics payload' }
+      }
+    }
+  }, async (_req, reply) => {
     reply.header('Content-Type', metricsRegistry.contentType);
     reply.send(await metricsRegistry.metrics());
   });
@@ -56,7 +79,32 @@ export async function buildApi(options = {}) {
   /**
    * GET /summaries?limit=&container=&from=&to=
    */
-  fastify.get('/summaries', { preHandler: verifyJwt, schema: { querystring: summariesQuerySchema } }, async (req, _reply) => {
+  fastify.get('/summaries', {
+    preHandler: verifyJwt,
+    schema: {
+      tags: ['Summaries'],
+      summary: 'List summaries',
+      description: 'Returns recent log summaries with optional filters.',
+      querystring: summariesQuerySchema,
+      response: {
+        200: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              container: { type: 'string' },
+              ts_start: { type: 'string' },
+              ts_end: { type: 'string' },
+              summary: { type: 'string' },
+              cost_usd: { type: 'number' },
+              created_at: { type: 'string' }
+            }
+          }
+        }
+      }
+    }
+  }, async (req, _reply) => {
     const {
       limit = 100,
       container,
