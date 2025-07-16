@@ -6,6 +6,7 @@
  */
 
 import Docker from 'dockerode';
+import { DockerSourceReader } from './sources.js';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger.js';
 
@@ -181,10 +182,18 @@ export class LogCollector extends EventEmitter {
     LOG.info('🛑 [collector] Stopping log collection');
     this.running = false;
     
-    // Clean up all chunkers
+    // Clean up readers & chunkers
+    for (const { reader } of this.containers.values()) {
+      if (reader && typeof reader.stop === 'function') {
+        // eslint-disable-next-line no-await-in-loop
+        await reader.stop();
+      }
+    }
+
     for (const chunker of this.chunkers.values()) {
       chunker.destroy();
     }
+
     this.chunkers.clear();
     this.containers.clear();
     
@@ -218,43 +227,21 @@ export class LogCollector extends EventEmitter {
     
     try {
       const container = this.docker.getContainer(containerInfo.Id);
-      const chunker = new Chunker(containerId);
-      
-      // Forward chunks from chunker
-      chunker.on('chunk', (chunk) => {
+      // Create DockerSourceReader instance
+      const reader = new DockerSourceReader(container, containerInfo);
+
+      // Forward chunks emitted by reader
+      reader.on('chunk', (chunk) => {
         this.emit('chunk', chunk);
       });
-      
-      this.chunkers.set(containerId, chunker);
-      this.containers.set(containerId, { container, info: containerInfo });
-      
-      // Start streaming logs
-      const logStream = await container.logs({
-        follow: true,
-        stdout: true,
-        stderr: true,
-        timestamps: true,
-        tail: 0
-      });
-      
-      logStream.on('data', (data) => {
-        // dockerode returns multiplexed stream, we need to handle the header
-        const lines = data.toString().split('\n').filter(line => line.trim());
-        for (const line of lines) {
-          chunker.feed(line + '\n');
-        }
-      });
-      
-      logStream.on('error', (error) => {
-        LOG.error(`💥 [collector/${containerId}] Log stream error`, { error: error.message });
-        // TODO: Implement reconnection logic
-      });
-      
-      logStream.on('end', () => {
-        LOG.warn(`🔚 [collector/${containerId}] Log stream ended`);
-        // TODO: Implement reconnection logic
-      });
-      
+
+      // Start reader
+      await reader.start();
+
+      // Store references for later stop/cleanup
+      this.chunkers.set(containerId, reader.chunker);
+      this.containers.set(containerId, { container, info: containerInfo, reader });
+       
     } catch (error) {
       LOG.error(`💥 [collector/${containerId}] Failed to attach to container`, { error: error.message });
       throw error;
