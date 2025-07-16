@@ -65,7 +65,7 @@ export class GeminiClient {
 
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({ 
-      model: options.model || 'gemini-1.5-flash' 
+      model: options.model || 'gemini-2.5-pro' 
     });
     this.requestTimeout = options.requestTimeout ?? options.timeout ?? 30000; // 30 seconds
     this.timeout = this.requestTimeout; // Internal timeout
