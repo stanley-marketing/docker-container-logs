@@ -17,22 +17,23 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "dockerode": "^4.0.2",
-    "fastify": "^4.26.0",
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "^3.0.0",
-    "better-sqlite3": "^9.4.0",
     "@google/generative-ai": "^0.2.1",
-    "yargs": "^17.7.2",
+    "better-sqlite3": "^9.4.0",
+    "dockerode": "^4.0.2",
+    "fastify": "^4.26.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2",
     "prom-client": "^15.1.0",
     "winston": "^3.11.0",
-    "jsonwebtoken": "^9.0.2"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "vitest": "^1.6.1",
-    "eslint": "^8.56.0",
     "@eslint/js": "^8.56.0",
-    "supertest": "^6.3.4"
+    "eslint": "^8.56.0",
+    "supertest": "^6.3.4",
+    "vitest": "^3.2.4"
   },
   "keywords": [
     "docker",
@@ -43,8 +44,5 @@
     "mcp"
   ],
   "author": "",
-  "license": "MIT",
-  "overrides": {
-    "esbuild": "^0.24.3"
-  }
-} 
+  "license": "MIT"
+}
