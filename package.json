@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix"
+    "lint:fix": "eslint src/ --fix",
+    "start:api": "node src/api.js"
   },
   "engines": {
     "node": ">=20.0.0"

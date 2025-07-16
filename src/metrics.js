@@ -35,6 +35,13 @@ export const geminiCostUsdTotal = new Counter({
   registers: [metricsRegistry]
 });
 
+// Counter for total log lines ingested
+export const logLinesTotal = new Counter({
+  name: 'log_lines_total',
+  help: 'Total number of log lines ingested',
+  registers: [metricsRegistry]
+});
+
 export function metricsMiddleware(req, res) {
   res.setHeader('Content-Type', metricsRegistry.contentType);
   metricsRegistry.metrics().then((data) => {

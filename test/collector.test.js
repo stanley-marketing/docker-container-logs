@@ -4,12 +4,15 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Chunker, LogCollector } from '../src/collector.js';
+import { logLinesTotal } from '../src/metrics.js';
 
 describe('Chunker', () => {
   let chunker;
 
   beforeEach(() => {
     chunker = new Chunker('test-container', 1000, 50); // 1s, 50 bytes for testing
+    // Reset logLinesTotal counter before each test
+    if (logLinesTotal && logLinesTotal.reset) logLinesTotal.reset();
   });
 
   afterEach(() => {
@@ -62,6 +65,14 @@ describe('Chunker', () => {
   it('should not flush empty buffer', () => {
     const chunk = chunker._flush('manual');
     expect(chunk).toBeNull();
+  });
+
+  it('should increment logLinesTotal counter for each ingested line', () => {
+    const initial = logLinesTotal.hashMap['']?.value || 0;
+    chunker.feed('line 1\n');
+    chunker.feed('line 2\n');
+    const after = logLinesTotal.hashMap['']?.value || 0;
+    expect(after - initial).toBe(2);
   });
 
   // Performance test for AC 9 - 2000 lines per second

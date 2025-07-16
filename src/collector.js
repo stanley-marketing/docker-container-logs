@@ -9,6 +9,7 @@ import Docker from 'dockerode';
 import { DockerSourceReader } from './sources.js';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger.js';
+import { logLinesTotal } from './metrics.js';
 
 const LOG = logger.child({ module: 'collector' });
 
@@ -55,6 +56,9 @@ export class Chunker extends EventEmitter {
     for (const pattern of SECRET_PATTERNS) {
       redactedLine = redactedLine.replace(pattern, '**REDACTED**');
     }
+
+    // Increment Prometheus counter for each ingested line
+    logLinesTotal.inc();
     
     this.buffer += redactedLine;
     this.sizeBytes += Buffer.byteLength(redactedLine, 'utf8');
