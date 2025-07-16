@@ -1,0 +1,46 @@
+{
+  "name": "docker-log-summariser-mcp",
+  "version": "0.1.0",
+  "description": "Stream Docker container logs, summarise with Gemini, allow Q&A",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "dockerode": "^4.0.2",
+    "fastify": "^4.26.0",
+    "@fastify/swagger": "^8.14.0",
+    "@fastify/swagger-ui": "^3.0.0",
+    "better-sqlite3": "^9.4.0",
+    "@google/generative-ai": "^0.2.1",
+    "yargs": "^17.7.2",
+    "prom-client": "^15.1.0",
+    "winston": "^3.11.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "vitest": "^1.2.0",
+    "eslint": "^8.56.0",
+    "@eslint/js": "^8.56.0",
+    "supertest": "^6.3.4"
+  },
+  "keywords": [
+    "docker",
+    "logs",
+    "gemini",
+    "ai",
+    "summarisation",
+    "mcp"
+  ],
+  "author": "",
+  "license": "MIT"
+} 

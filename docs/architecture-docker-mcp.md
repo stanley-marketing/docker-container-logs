@@ -1,17 +1,17 @@
 # Docker Log Summariser MCP – Technical Architecture
 
 ## Overview
-The architecture focuses on a lightweight Python service that tails Docker container logs, chunks them into manageable blobs, routes each chunk through Gemini for summarisation, and stores results for fast querying via CLI or REST.
+The architecture focuses on a lightweight Node.js service that tails Docker container logs, chunks them into manageable blobs, routes each chunk through Gemini for summarisation, and stores results for fast querying via CLI or REST.
 
 ## Component Diagram
 ```mermaid
 graph TD
     subgraph "Host Machine"
-        LC["📝 Log Collector (Python + docker-py)"]
+        LC["📝 Log Collector (Node.js + dockerode)"]
         CH["🔗 Chunker & Pre-Processor"]
         SUM["🧠 Gemini Summariser Worker"]
         DB[("📦 SQLite / Postgres – Summaries & Metadata")]
-        API["🌐 Query API (FastAPI & Typer CLI)"]
+        API["🌐 Query API (Fastify & yargs CLI)"]
     end
     UserCLI["💻 CLI / MCP Client"]
     DockerEngine["🐳 Docker Engine"]
@@ -28,20 +28,20 @@ graph TD
 ## Component Descriptions
 | ID | Component | Responsibilities |
 |----|-----------|------------------|
-| LC | **Log Collector** | Attaches to selected containers using docker-py; streams _stdout_ & _stderr_; handles restart & rotation; pushes raw lines to Chunker. |
+| LC | **Log Collector** | Attaches to selected containers using dockerode; streams _stdout_ & _stderr_; handles restart & rotation; pushes raw lines to Chunker. |
 | CH | **Chunker / Pre-Processor** | Buffers lines; strips ANSI; redacts secrets; emits chunk every 30 s or when size > 8 KB. |
 | SUM | **Gemini Summariser Worker** | Consumes chunks; sends prompt to Gemini; records summary, token usage, cost; retries with back-off. |
 | DB | **Persistence Layer** | SQLite (file) by default; Postgres via SQLAlchemy for multi-node; full-text search on summaries. |
-| API | **Query Interface** | FastAPI REST plus Typer CLI wrapper; endpoints: `/summaries`, `/chunks/{id}`, `/ask`; secures via JWT. |
+| API | **Query Interface** | Fastify REST plus yargs CLI wrapper; endpoints: `/summaries`, `/chunks/{id}`, `/ask`; secures via JWT. |
 | UserCLI | **User Client / MCP** | Human or programmatic caller; browses summaries, runs follow-up questions. |
 
 ## Technology Stack
-* **Language / Runtime:** Python 3.12, asyncio.
-* **Docker SDK:** `docker==7.x` (docker-py) for log streaming.
-* **Web / CLI:** FastAPI for REST; Typer for CLI commands sharing same service layer.
-* **Database:** SQLite (MVP) → Postgres option; SQLAlchemy ORM; `sqlite-fts5` for full-text search.
-* **LLM:** Google Gemini via official SDK; exponential back-off & circuit-breaker wrapper.
-* **Observability:** Prometheus client (`/metrics` endpoint); structured logs (`logfmt`).
+* **Language / Runtime:** Node.js 20 LTS, native async/await.
+* **Docker SDK:** `dockerode` for log streaming with Promise-based API.
+* **Web / CLI:** Fastify for REST; yargs for CLI commands sharing same service layer.
+* **Database:** better-sqlite3 (MVP) → pg (PostgreSQL) option; Prisma ORM; SQLite FTS5 for full-text search.
+* **LLM:** Google Gemini via @google/generative-ai or native fetch; exponential back-off & circuit-breaker wrapper.
+* **Observability:** prom-client (`/metrics` endpoint); structured logs (winston or pino).
 
 ## Data Flow
 1. Docker Engine emits logs → Log Collector reads via socket.
@@ -73,7 +73,7 @@ summaries (
 * Graceful SIGTERM: drains buffers, flushes DB, closes Gemini sessions.
 
 ## Deployment
-* Single binary via `pipx`; systemd unit or Docker sidecar (`--pid=host --volumes=/var/run/docker.sock:ro`).
+* Single binary via `pkg` or Docker image; systemd unit or Docker sidecar (`--pid=host --volumes=/var/run/docker.sock:ro`).
 * Helm chart planned for Kubernetes environments.
 
 ## Future Extensions
