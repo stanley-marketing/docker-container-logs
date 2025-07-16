@@ -28,7 +28,7 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "vitest": "^1.2.0",
+    "vitest": "^1.6.1",
     "eslint": "^8.56.0",
     "@eslint/js": "^8.56.0",
     "supertest": "^6.3.4"
@@ -42,5 +42,8 @@
     "mcp"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "esbuild": "^0.24.3"
+  }
 } 

@@ -12,9 +12,9 @@
 10. **FR10** Graceful shutdown saves in-flight buffers.
 
 ## 2.2 Non-Functional (NFR)
-1. **NFR1** Install via `pipx install docker-log-summariser`; Python 3.10+.
+1. **NFR1** Install via `npm install -g docker-log-summariser`; Node.js 20+.
 2. **NFR2** Resource envelope: CPU < 100 milli-cores, RAM < 150 MB for 10 containers @ 200 lps each.
-3. **NFR3** SQLite default; Postgres optional via SQLAlchemy.
+3. **NFR3** SQLite default via better-sqlite3; Postgres optional via pg driver.
 4. **NFR4** Outbound traffic limited to Gemini endpoint (configurable proxy).
 5. **NFR5** CLI operations P95 < 200 ms; REST latency P95 < 200 ms for summary fetch.
 6. **NFR6** ≥ 80 % unit coverage; integration tests with Docker-in-Docker.
