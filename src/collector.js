@@ -6,7 +6,7 @@
  */
 
 import Docker from 'dockerode';
-import { DockerSourceReader } from './sources.js';
+import { DockerSourceReader, FileSourceReader, URLSourceReader } from './sources.js';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger.js';
 import { logLinesTotal } from './metrics.js';
@@ -139,16 +139,17 @@ export class LogCollector extends EventEmitter {
   constructor(options = {}) {
     super();
     this.docker = new Docker(options.docker || {});
-    this.chunkers = new Map();
-    this.containers = new Map();
+    this.sourceReaders = new Map();
     this.running = false;
   }
 
   /**
    * Start collecting logs from specified containers
    * @param {Object} options - Collection options
-   * @param {boolean} options.all - Collect from all containers
-   * @param {Object} options.labels - Filter by labels
+   * @param {boolean} [options.all] - Collect from all containers
+   * @param {Object} [options.labels] - Filter by labels
+   * @param {string} [options.file] - Collect from a file path
+   * @param {string} [options.url] - Collect from a URL
    */
   async start(options = {}) {
     if (this.running) {
@@ -159,15 +160,17 @@ export class LogCollector extends EventEmitter {
     LOG.info('🚀 [collector] Starting log collection', options);
     
     try {
-      // Discover containers
-      const containers = await this._discoverContainers(options);
-      LOG.info(`🔍 [collector] Found ${containers.length} containers to monitor`);
-      
-      // Start monitoring each container
-      for (const container of containers) {
-        await this._attachToContainer(container);
+      if (options.file) {
+        await this._startFileSource(options.file, options);
+      } else if (options.url) {
+        await this._startUrlSource(options.url, options);
+      } else {
+        const containers = await this._discoverContainers(options);
+        LOG.info(`🔍 [collector] Found ${containers.length} containers to monitor`);
+        for (const container of containers) {
+          await this._attachToContainer(container);
+        }
       }
-      
     } catch (error) {
       LOG.error('💥 [collector] Failed to start log collection', { error: error.message });
       this.running = false;
@@ -186,20 +189,11 @@ export class LogCollector extends EventEmitter {
     LOG.info('🛑 [collector] Stopping log collection');
     this.running = false;
     
-    // Clean up readers & chunkers
-    for (const { reader } of this.containers.values()) {
-      if (reader && typeof reader.stop === 'function') {
-        // eslint-disable-next-line no-await-in-loop
-        await reader.stop();
-      }
+    for (const reader of this.sourceReaders.values()) {
+      await reader.stop();
     }
 
-    for (const chunker of this.chunkers.values()) {
-      chunker.destroy();
-    }
-
-    this.chunkers.clear();
-    this.containers.clear();
+    this.sourceReaders.clear();
     
     LOG.info('✅ [collector] Log collection stopped');
   }
@@ -225,31 +219,35 @@ export class LogCollector extends EventEmitter {
    */
   async _attachToContainer(containerInfo) {
     const containerId = containerInfo.Id.substring(0, 12);
-    const containerName = containerInfo.Names[0]?.substring(1) || containerId;
-    
-    LOG.info(`🔗 [collector/${containerId}] Attaching to container ${containerName}`);
     
     try {
       const container = this.docker.getContainer(containerInfo.Id);
-      // Create DockerSourceReader instance
       const reader = new DockerSourceReader(container, containerInfo);
 
-      // Forward chunks emitted by reader
       reader.on('chunk', (chunk) => {
         this.emit('chunk', chunk);
       });
-
-      // Start reader
       await reader.start();
-
-      // Store references for later stop/cleanup
-      this.chunkers.set(containerId, reader.chunker);
-      this.containers.set(containerId, { container, info: containerInfo, reader });
+      this.sourceReaders.set(reader.sourceId, reader);
        
     } catch (error) {
       LOG.error(`💥 [collector/${containerId}] Failed to attach to container`, { error: error.message });
       throw error;
     }
+  }
+
+  async _startFileSource(filePath, options) {
+    const reader = new FileSourceReader(filePath, options);
+    reader.on('chunk', (chunk) => this.emit('chunk', chunk));
+    await reader.start();
+    this.sourceReaders.set(reader.sourceId, reader);
+  }
+
+  async _startUrlSource(url, options) {
+    const reader = new URLSourceReader(url, options);
+    reader.on('chunk', (chunk) => this.emit('chunk', chunk));
+    await reader.start();
+    this.sourceReaders.set(reader.sourceId, reader);
   }
 }
 

@@ -77,6 +77,20 @@ export class DatabaseManager {
       )
     `;
 
+    const qaTable = `
+      CREATE TABLE IF NOT EXISTS qa_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        chunk_id INTEGER,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        tokens_in INTEGER NOT NULL,
+        tokens_out INTEGER NOT NULL,
+        cost_usd REAL NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (chunk_id) REFERENCES chunks(id) ON DELETE SET NULL
+      )
+    `;
+
     // Create indexes for performance
     const chunksIndexes = [
       'CREATE INDEX IF NOT EXISTS idx_chunks_container ON chunks(container)',
@@ -92,6 +106,7 @@ export class DatabaseManager {
     try {
       this.db.exec(chunksTable);
       this.db.exec(summariesTable);
+      this.db.exec(qaTable);
       
       chunksIndexes.forEach(sql => this.db.exec(sql));
       summariesIndexes.forEach(sql => this.db.exec(sql));
@@ -134,6 +149,12 @@ export class DatabaseManager {
         
         getSummariesByChunk: this.db.prepare(`
           SELECT * FROM summaries WHERE chunk_id = ? ORDER BY created_at DESC
+        `),
+
+        // QA operations
+        insertQA: this.db.prepare(`
+          INSERT INTO qa_sessions (chunk_id, question, answer, tokens_in, tokens_out, cost_usd)
+          VALUES (?, ?, ?, ?, ?, ?)
         `),
 
         // Combined queries
@@ -217,6 +238,38 @@ export class DatabaseManager {
     } catch (error) {
       LOG.error('💥 [models] Failed to insert summary', { 
         chunkId: summary.chunkId,
+        error: error.message 
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Insert a new QA session
+   * @param {Object} qaSession - QA session data
+   * @returns {number} - Inserted QA session ID
+   */
+  insertQA(qaSession) {
+    try {
+      const result = this.statements.insertQA.run(
+        qaSession.chunkId,
+        qaSession.question,
+        qaSession.answer,
+        qaSession.tokensIn,
+        qaSession.tokensOut,
+        qaSession.costUsd
+      );
+      
+      LOG.debug('💾 [models] QA session inserted', { 
+        qaSessionId: result.lastInsertRowid,
+        chunkId: qaSession.chunkId,
+        costUsd: qaSession.costUsd
+      });
+      
+      return result.lastInsertRowid;
+    } catch (error) {
+      LOG.error('💥 [models] Failed to insert QA session', { 
+        chunkId: qaSession.chunkId,
         error: error.message 
       });
       throw error;

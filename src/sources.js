@@ -3,6 +3,10 @@ import { Chunker } from './collector.js';
 import { logger } from './utils/logger.js';
 import fs from 'fs';
 import readline from 'readline';
+import zlib from 'zlib';
+import fetch from 'node-fetch';
+import { collectorSourceErrorsTotal } from './metrics.js';
+import { URL } from 'url';
 
 const LOG = logger.child({ module: 'source-reader' });
 
@@ -101,107 +105,119 @@ export class DockerSourceReader extends AbstractSourceReader {
 }
 
 /**
- * Placeholder implementation for reading logs from a local file.
- * Full implementation will follow in later phases of Story 1.4.
+ * Reads logs from a local file, with optional tailing (`-f`) support.
  */
 export class FileSourceReader extends AbstractSourceReader {
-  /**
-   * @param {string} filePath - Path to log file
-   * @param {Object} [options]
-   * @param {boolean} [options.follow=false] - Follow file like tail -F (handles rotation)
-   * @param {number} [options.maxAge] - Chunker flush age (ms)
-   * @param {number} [options.maxSize] - Chunker max size (bytes)
-   */
   constructor(filePath, options = {}) {
-    super(`file:${filePath}`);
-    this.filePath = fs.realpathSync(filePath);
+    const absPath = fs.realpathSync(filePath);
+    super(`file:${absPath}`);
+    this.filePath = absPath;
     this.follow = options.follow || false;
 
     const { maxAge = 30000, maxSize = 8192 } = options;
     this.chunker = new Chunker(this.sourceId, maxAge, maxSize);
     this.chunker.on('chunk', (chunk) => this.emit('chunk', chunk));
-
-    this._reader = null; // readline.Interface
-    this._watcher = null; // fs.FSWatcher for follow
   }
 
   async start() {
     if (this.running) return;
     this.running = true;
+    LOG.info(`📂 [collector/file] Starting to read from ${this.filePath}`, { follow: this.follow });
 
-    await this._openStream();
+    const stream = fs.createReadStream(this.filePath, { encoding: 'utf8' });
+    const rl = readline.createInterface({ input: stream });
 
-    if (this.follow) {
-      this._setupWatcher();
-    }
-  }
-
-  async _openStream(position = 0) {
-    const stream = fs.createReadStream(this.filePath, {
-      encoding: 'utf8',
-      start: position,
-    });
-
-    this._reader = readline.createInterface({ input: stream });
-
-    this._reader.on('line', (line) => {
+    rl.on('line', (line) => {
       this.chunker.feed(line + '\n');
     });
 
-    this._reader.on('close', () => {
+    rl.on('close', () => {
       if (!this.follow) {
+        LOG.info(`🔚 [collector/file] Finished reading ${this.filePath}`);
         this.emit('end');
       }
     });
 
     stream.on('error', (err) => {
-      LOG.error('💥 [collector/file] Stream error', { error: err.message, file: this.filePath });
+      LOG.error('💥 [collector/file] Stream error', { error: err.message });
+      collectorSourceErrorsTotal.inc({ source_type: 'file' });
       this.emit('error', err);
     });
-  }
 
-  _setupWatcher() {
-    // Watch for file rename (rotation) & change to continue streaming
-    this._watcher = fs.watch(this.filePath, (eventType) => {
-      if (eventType === 'rename') {
-        // File rotated – reopen new file path once available
-        setTimeout(() => {
-          if (fs.existsSync(this.filePath)) {
-            this._openStream(0);
-          }
-        }, 1000);
-      }
-    });
+    if (this.follow) {
+      // Basic follow - does not handle log rotation yet
+      let size = fs.statSync(this.filePath).size;
+      fs.watchFile(this.filePath, (curr) => {
+        if (curr.size > size) {
+          const newStream = fs.createReadStream(this.filePath, { start: size, encoding: 'utf8' });
+          newStream.on('data', (data) => {
+            const lines = data.toString().split('\n');
+            lines.forEach(l => this.chunker.feed(l + '\n'));
+          });
+          size = curr.size;
+        }
+      });
+    }
   }
 
   async stop() {
     if (!this.running) return;
     this.running = false;
-
-    if (this._watcher) {
-      this._watcher.close();
-      this._watcher = null;
-    }
-
-    if (this._reader) {
-      this._reader.close();
-      this._reader = null;
-    }
-
+    fs.unwatchFile(this.filePath);
     this.chunker.destroy();
+    LOG.info(`🛑 [collector/file] Stopped reading from ${this.filePath}`);
   }
 }
 
 /**
- * Placeholder implementation for reading logs from an HTTP(S) URL.
+ * Reads logs from an HTTP(S) URL, with gzip support.
  */
 export class URLSourceReader extends AbstractSourceReader {
-  constructor(url) {
+  constructor(url, options = {}) {
     super(`url:${url}`);
-    // TODO: implement streaming logic in Phase 3
+    this.url = new URL(url);
+    const { maxAge = 30000, maxSize = 8192 } = options;
+    this.chunker = new Chunker(this.sourceId, maxAge, maxSize);
+    this.chunker.on('chunk', (chunk) => this.emit('chunk', chunk));
   }
+
   async start() {
-    throw new Error('URLSourceReader not implemented yet');
+    if (this.running) return;
+    this.running = true;
+    LOG.info(`🌐 [collector/url] Starting to read from ${this.url}`);
+
+    try {
+      const response = await fetch(this.url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      let stream = response.body;
+      if (this.url.pathname.endsWith('.gz')) {
+        stream = stream.pipe(zlib.createGunzip());
+      }
+
+      const rl = readline.createInterface({ input: stream });
+
+      rl.on('line', (line) => {
+        this.chunker.feed(line + '\n');
+      });
+
+      rl.on('close', () => {
+        LOG.info(`🔚 [collector/url] Finished reading from ${this.url}`);
+        this.emit('end');
+      });
+    } catch (error) {
+      LOG.error('💥 [collector/url] Failed to read from URL', { error: error.message });
+      collectorSourceErrorsTotal.inc({ source_type: 'url' });
+      this.emit('error', error);
+    }
   }
-  async stop() {}
+
+  async stop() {
+    if (!this.running) return;
+    this.running = false;
+    this.chunker.destroy();
+    LOG.info(`🛑 [collector/url] Stopped reading from ${this.url}`);
+  }
 } 

@@ -42,6 +42,14 @@ export const logLinesTotal = new Counter({
   registers: [metricsRegistry]
 });
 
+// Counter for collector source errors
+export const collectorSourceErrorsTotal = new Counter({
+  name: 'collector_source_errors_total',
+  help: 'Total number of errors encountered by log sources',
+  labelNames: ['source_type'],
+  registers: [metricsRegistry]
+});
+
 export function metricsMiddleware(req, res) {
   res.setHeader('Content-Type', metricsRegistry.contentType);
   metricsRegistry.metrics().then((data) => {

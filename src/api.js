@@ -4,6 +4,9 @@ import swaggerUI from '@fastify/swagger-ui';
 import { DatabaseManager } from './models.js';
 import { metricsRegistry } from './metrics.js';
 import { logger } from './utils/logger.js';
+import { summariesQuerySchema, chunkParamsSchema, askBodySchema } from './schema.js';
+import { buildVerifyJwt } from './auth.js';
+import { createQAHandler } from './qa.js';
 
 const LOG = logger.child({ module: 'api' });
 
@@ -32,6 +35,12 @@ export async function buildApi(options = {}) {
   const dbPath = options.dbPath || 'data/docker-logs.db';
   const db = new DatabaseManager(dbPath);
   await db.initialize();
+  fastify.decorate('db', db);
+  const qaHandler = createQAHandler(db);
+  fastify.decorate('qaHandler', qaHandler);
+
+  // JWT verification preHandler
+  const verifyJwt = buildVerifyJwt(process.env.JWT_SECRET || 'changeme');
 
   // Simple health route
   fastify.get('/health', async () => {
@@ -47,7 +56,7 @@ export async function buildApi(options = {}) {
   /**
    * GET /summaries?limit=&container=&from=&to=
    */
-  fastify.get('/summaries', async (req, _reply) => {
+  fastify.get('/summaries', { preHandler: verifyJwt, schema: { querystring: summariesQuerySchema } }, async (req, _reply) => {
     const {
       limit = 100,
       container,
@@ -85,7 +94,7 @@ export async function buildApi(options = {}) {
   /**
    * GET /chunks/:id – return raw chunk record (content path for now)
    */
-  fastify.get('/chunks/:id', async (req, reply) => {
+  fastify.get('/chunks/:id', { preHandler: verifyJwt, schema: { params: chunkParamsSchema } }, async (req, reply) => {
     const { id } = req.params;
     const chunk = db.getChunk(id);
     if (!chunk) {
@@ -98,9 +107,10 @@ export async function buildApi(options = {}) {
   /**
    * POST /ask – Placeholder handler
    */
-  fastify.post('/ask', async (_req, _reply) => {
-    // TODO: implement follow-up Q&A logic
-    return { message: 'Not implemented yet' };
+  fastify.post('/ask', { preHandler: verifyJwt, schema: { body: askBodySchema } }, async (req) => {
+    const { chunk_id: chunkId, question } = req.body;
+    const result = await qaHandler.ask({ chunkId, question });
+    return result;
   });
 
   return fastify;
