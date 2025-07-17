@@ -7,8 +7,8 @@ replicaCount: 1
 image:
   repository: your-repo/docker-log-summariser
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  # Overrides the image tag (default latest).
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -38,7 +38,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8000
 
 ingress:
   enabled: false
@@ -83,11 +83,15 @@ affinity: {}
 
 # Additional environment variables for the container
 env:
-  # - name: JWT_SECRET
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: my-secrets
-  #       key: jwt-secret
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: dlm-secrets
+        key: jwt-secret
+  - name: CORS_ORIGIN
+    value: "https://your-dashboard.example.com"
+  - name: NEXT_PUBLIC_API_URL
+    value: "https://api.example.com"
   # - name: GEMINI_API_KEY
   #   valueFrom:
   #     secretKeyRef:

@@ -6,6 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](#testing)
 [![Performance](https://img.shields.io/badge/throughput-142K%20lines%2Fsec-orange.svg)](#performance)
+[![CI](https://github.com/yourusername/docker-container-logs/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
 
 ---
 
@@ -165,6 +166,8 @@ npm run start:cli ask "What caused the last error?"
 | **🌐 REST API** | Full REST API with OpenAPI docs for integration | ✅ Complete |
 | **💻 CLI Interface** | User-friendly command-line tools for daily use | ✅ Complete |
 | **⚡ Performance** | 142K+ lines/sec throughput, sub-millisecond latency | ✅ Complete |
+| **🔍 Vector Search** | Fast cosine-similarity search across summaries | ✅ Complete |
+| **🖥️ Dashboard UI** | Minimal Next.js front-end for browsing/asking | ✅ Complete |
 
 ---
 
@@ -240,12 +243,13 @@ $ dlm ask "What's causing slow response times today?"
 ```bash
 # Required
 GEMINI_API_KEY=your-gemini-api-key
+JWT_SECRET=your-jwt-secret
 
 # Optional
-JWT_SECRET=your-jwt-secret              # Default: "changeme"
-PORT=8000                               # API server port
-DB_PATH=data/docker-logs.db            # SQLite database location
-LOG_LEVEL=info                          # Logging verbosity
+PORT=8000                          # API server port
+dbPath=...                         # SQLite path
+CORS_ORIGIN=https://your-site.com  # Allowed origin for dashboard
+NEXT_PUBLIC_API_URL=https://api.example.com # Dashboard fetch URL
 ```
 
 ### Docker Deployment
