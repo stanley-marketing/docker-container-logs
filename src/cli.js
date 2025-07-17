@@ -86,6 +86,10 @@ yargs(hideBin(process.argv))
     const data = await callApi(`/search?${qs.toString()}`);
     console.table(data);
   })
+  .command('login <username> <password>', 'Obtain JWT token', () => {}, async(args)=>{
+     const res = await callApi('/login',{method:'POST',body:JSON.stringify({username:args.username,password:args.password})});
+     console.log('Token:',res.token);
+   })
   .demandCommand()
   .help()
   .strict()

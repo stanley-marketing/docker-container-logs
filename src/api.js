@@ -9,6 +9,9 @@ import { summariesQuerySchema, chunkParamsSchema, askBodySchema } from './schema
 import { buildVerifyJwt } from './auth.js';
 import { createQAHandler } from './qa.js';
 import { rebuildIndex, search as vectorSearch } from './vector_search.js';
+import { attachWebsocket } from './websocket.js';
+import { loginBodySchema } from './schema.js';
+import { generateJwt } from './auth.js';
 
 const LOG = logger.child({ module: 'api' });
 
@@ -59,6 +62,33 @@ export async function buildApi(options = {}) {
     throw new Error('JWT_SECRET env var must be set');
   }
   const verifyJwt = buildVerifyJwt(jwtSecret);
+
+  // Attach websocket (after jwtSecret available)
+  attachWebsocket(fastify, { jwtSecret });
+
+  // Simple login route
+  const adminUser = process.env.ADMIN_USER || 'admin';
+  const adminPass = process.env.ADMIN_PASS || 'changeme';
+
+  fastify.post('/login', {
+    schema: {
+      tags: ['Auth'],
+      summary: 'Login and receive JWT',
+      body: loginBodySchema,
+      response: {
+        200: { type: 'object', properties: { token: { type: 'string' } } },
+        401: { type: 'object', properties: { error: { type: 'string' } } }
+      }
+    }
+  }, async (req, reply) => {
+    const { username, password } = req.body;
+    if (username !== adminUser || password !== adminPass) {
+      reply.code(401);
+      return { error: 'Invalid credentials' };
+    }
+    const token = generateJwt({ sub: username }, jwtSecret);
+    return { token };
+  });
 
   // Simple health route
   fastify.get('/health', {
@@ -128,7 +158,7 @@ export async function buildApi(options = {}) {
       to
     } = req.query;
 
-    let sql = `SELECT s.id, c.container, c.ts_start, c.ts_end, s.summary, s.cost_usd, s.created_at
+    let sql = `SELECT s.id, c.id as chunk_id, c.container, c.ts_start, c.ts_end, s.summary, s.cost_usd, s.created_at
                FROM summaries s JOIN chunks c ON s.chunk_id = c.id`;
     const params = [];
     const where = [];
@@ -207,8 +237,8 @@ export async function buildApi(options = {}) {
    * POST /ask – Placeholder handler
    */
   fastify.post('/ask', { preHandler: verifyJwt, schema: { body: askBodySchema } }, async (req) => {
-    const { chunk_id: chunkId, question } = req.body;
-    const result = await qaHandler.ask({ chunkId, question });
+    const { chunk_id: chunkId, question, history = [] } = req.body;
+    const result = await qaHandler.ask({ chunkId, question, history });
     return result;
   });
 

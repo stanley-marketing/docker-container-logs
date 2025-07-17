@@ -230,13 +230,34 @@ export class GeminiSummariser extends EventEmitter {
     
     this.running = false;
     this.dbInitialized = false;
+    this.processingQueue = [];
+    this.concurrent = 0;
+    this.maxConcurrent = options.maxConcurrent || 1;
     
     // Bind event handlers
-    this.consumer.on('process', this._processChunk.bind(this));
+    this.consumer.on('process', (chunk)=>this._enqueue(chunk));
     
     LOG.info('🧠 [summariser] Gemini Summariser initialized', {
       circuitBreakerThreshold: this.circuitBreaker.threshold
     });
+  }
+
+  _enqueue(chunk) {
+    this.processingQueue.push(chunk);
+    this._drain();
+  }
+
+  async _drain() {
+    if (this.concurrent >= this.maxConcurrent) return;
+    const next = this.processingQueue.shift();
+    if (!next) return;
+    this.concurrent += 1;
+    try {
+      await this._processChunk(next);
+    } finally {
+      this.concurrent -= 1;
+      this._drain();
+    }
   }
 
   /**

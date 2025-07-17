@@ -16,8 +16,11 @@ beforeAll(async () => {
   api.qaHandler = api.qaHandler || api; //avoid ts
   const handler = api.qahandler || api.qaHandler || api;
   if (handler.gemini) {
-    vi.spyOn(handler.gemini, 'summarise').mockResolvedValue({
-      summary: 'Answer', tokensIn: 10, tokensOut: 5, costUsd: 0.00001
+    vi.spyOn(handler.gemini.model, 'generateContent').mockResolvedValue({
+      response: {
+        text: () => 'Answer',
+        usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 1 }
+      }
     });
   }
   await api.ready();

@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { logger } from './utils/logger.js';
 
+export function generateJwt(payload, secret, opts = {}) {
+  if (!secret) throw new Error('JWT secret not provided');
+  return jwt.sign(payload, secret, { expiresIn: opts.expiresIn || '7d' });
+}
+
 const LOG = logger.child({ module: 'auth' });
 
 /**

@@ -70,6 +70,7 @@ test('POST /ask should call qaHandler and return a result', async () => {
   expect(response.json()).toEqual(mockAnswer);
   expect(qaHandlerMock.ask).toHaveBeenCalledWith({
     chunkId: 1,
-    question: 'What is the meaning of life?'
+    question: 'What is the meaning of life?',
+    history: []
   });
 }); 

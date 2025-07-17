@@ -23,12 +23,30 @@ export const chunkParamsSchema = {
 
 export const askBodySchema = {
   type: 'object',
-  properties: {
-    chunk_id: { type: 'integer' },
-    question: { type: 'string' },
-    from: { type: 'string', format: 'date-time' },
-    to: { type: 'string', format: 'date-time' }
-  },
   required: ['question'],
-  additionalProperties: false
+  properties: {
+    chunk_id: { type: ['integer', 'null'] },
+    question: { type: 'string' },
+    history: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['role', 'content'],
+        properties: {
+          role: { type: 'string', enum: ['user', 'assistant'] },
+          content: { type: 'string' }
+        }
+      },
+      default: []
+    }
+  }
+};
+
+export const loginBodySchema = {
+  type: 'object',
+  required: ['username','password'],
+  properties: {
+    username: { type: 'string' },
+    password: { type: 'string' }
+  }
 }; 

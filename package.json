@@ -14,7 +14,8 @@
     "start:api": "node src/api.js",
     "start:cli": "node src/cli.js",
     "test:coverage": "vitest run --coverage",
-    "bench:file": "node scripts/benchmark-file-ingestion.js"
+    "bench:file": "node scripts/benchmark-file-ingestion.js",
+    "dev:all": "bash scripts/dev-all.sh"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -30,6 +31,8 @@
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^3.3.2",
     "prom-client": "^15.1.0",
+    "socket.io": "4.7.2",
+    "socket.io-client": "4.7.2",
     "winston": "^3.11.0",
     "yargs": "^17.7.2"
   },

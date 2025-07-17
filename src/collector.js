@@ -28,7 +28,8 @@ const ANSI_PATTERN = /\x1b\[[0-9;]*m/g;
  * Chunker class that buffers log lines and emits chunks when size/time limits are reached
  */
 export class Chunker extends EventEmitter {
-  constructor(containerId, maxAge = 30000, maxSize = 8192, sourceType = 'docker') {
+  // maxSize default ~500 kB (≈125 k tokens) aligns better with Gemini context window
+  constructor(containerId, maxAge = 30000, maxSize = 500_000, sourceType = 'docker') {
     super();
     this.containerId = containerId;
     this.sourceType = sourceType;
@@ -110,7 +111,7 @@ export class Chunker extends EventEmitter {
     
     // Increment chunks total metric
     chunksTotal.inc({ source_type: this.sourceType });
-
+    
     this.emit('chunk', chunk);
     return chunk;
   }

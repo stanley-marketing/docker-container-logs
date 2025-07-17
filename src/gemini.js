@@ -67,9 +67,13 @@ export class GeminiClient {
     this.model = this.genAI.getGenerativeModel({ 
       model: options.model || 'gemini-2.5-pro' 
     });
-    this.requestTimeout = options.requestTimeout ?? options.timeout ?? 30000; // 30 seconds
+    const envTimeout = process.env.GEMINI_TIMEOUT_MS ? Number(process.env.GEMINI_TIMEOUT_MS) : undefined;
+    this.requestTimeout = options.requestTimeout ?? options.timeout ?? envTimeout ?? 30000; // 30 seconds default
     this.timeout = this.requestTimeout; // Internal timeout
     this.retryConfig = { ...RETRY_CONFIG, ...options.retry };
+    this.summarise = this.summarise.bind(this);
+    /* eslint-disable-next-line */
+    this.summariseChunk = this.summarise;
   }
 
   /**

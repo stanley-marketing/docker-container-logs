@@ -1,0 +1,19 @@
+# ---- API Dockerfile ----
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# Install root dependencies
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Copy source
+COPY . .
+
+# Expose API port
+EXPOSE 8000
+
+# Default environment (can be overridden via compose/env)
+ENV PORT=8000 \
+    NODE_ENV=production
+
+CMD ["npm","run","start:api"] 

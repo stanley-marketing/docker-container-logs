@@ -48,12 +48,17 @@ describe('File and URL Source Integration', () => {
       fs.createReadStream(TEST_GZ_FILE).pipe(res);
     });
     
-    await new Promise(resolve => server.listen(8080, resolve));
+    let port;
+    await new Promise(resolve => server.listen(0, () => {
+      // @ts-ignore
+      port = server.address().port;
+      resolve();
+    }));
     
     const collector = new LogCollector();
     const chunkPromise = new Promise(resolve => collector.on('chunk', resolve));
     
-    await collector.start({ url: 'http://localhost:8080/test.log.gz' });
+    await collector.start({ url: `http://localhost:${port}/test.log.gz` });
     
     // Give the collector a moment to read the stream
     await new Promise(r => setTimeout(r, 100));

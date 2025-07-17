@@ -114,7 +114,7 @@ export class FileSourceReader extends AbstractSourceReader {
     this.filePath = absPath;
     this.follow = options.follow || false;
 
-    const { maxAge = 30000, maxSize = 8192 } = options;
+    const { maxAge = 30000, maxSize } = options;
     this.chunker = new Chunker(this.sourceId, maxAge, maxSize, 'file');
     this.chunker.on('chunk', (chunk) => this.emit('chunk', chunk));
   }
@@ -151,9 +151,9 @@ export class FileSourceReader extends AbstractSourceReader {
       const readIncrement = (start) => {
         const incrStream = fs.createReadStream(this.filePath, { start, encoding: 'utf8' });
         incrStream.on('data', (data) => {
-          const lines = data.toString().split('\n');
+            const lines = data.toString().split('\n');
           lines.forEach((l) => this.chunker.feed(l + '\n'));
-        });
+          });
       };
 
       fs.watchFile(
@@ -198,7 +198,7 @@ export class URLSourceReader extends AbstractSourceReader {
   constructor(url, options = {}) {
     super(`url:${url}`);
     this.url = new URL(url);
-    const { maxAge = 30000, maxSize = 8192 } = options;
+    const { maxAge = 30000, maxSize } = options;
     this.chunker = new Chunker(this.sourceId, maxAge, maxSize, 'url');
     this.chunker.on('chunk', (chunk) => this.emit('chunk', chunk));
   }
@@ -219,26 +219,26 @@ export class URLSourceReader extends AbstractSourceReader {
         LOG.info(`🌐 [collector/url] Fetching ${this.url} (attempt ${attempt + 1}, offset ${bytesRead})`);
 
         const response = await fetch(this.url, { headers });
-        if (!response.ok) {
+      if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
-        }
+      }
 
-        let stream = response.body;
-        if (this.url.pathname.endsWith('.gz')) {
-          stream = stream.pipe(zlib.createGunzip());
-        }
+      let stream = response.body;
+      if (this.url.pathname.endsWith('.gz')) {
+        stream = stream.pipe(zlib.createGunzip());
+      }
 
-        const rl = readline.createInterface({ input: stream });
+      const rl = readline.createInterface({ input: stream });
 
-        rl.on('line', (line) => {
+      rl.on('line', (line) => {
           bytesRead += Buffer.byteLength(line, 'utf8') + 1; // include newline
-          this.chunker.feed(line + '\n');
-        });
+        this.chunker.feed(line + '\n');
+      });
 
-        rl.on('close', () => {
-          LOG.info(`🔚 [collector/url] Finished reading from ${this.url}`);
-          this.emit('end');
-        });
+      rl.on('close', () => {
+        LOG.info(`🔚 [collector/url] Finished reading from ${this.url}`);
+        this.emit('end');
+      });
 
         stream.on('error', async (err) => {
           LOG.error('💥 [collector/url] Stream error', { error: err.message });
@@ -251,16 +251,16 @@ export class URLSourceReader extends AbstractSourceReader {
             this.emit('error', err);
           }
         });
-      } catch (error) {
+    } catch (error) {
         LOG.error('💥 [collector/url] Fetch failed', { error: error.message });
-        collectorSourceErrorsTotal.inc({ source_type: 'url' });
+      collectorSourceErrorsTotal.inc({ source_type: 'url' });
         if (attempt < maxRetries) {
           attempt += 1;
           await delay(1000 * attempt);
           await fetchAndStream();
         } else {
-          this.emit('error', error);
-        }
+      this.emit('error', error);
+  }
       }
     };
 
@@ -273,4 +273,4 @@ export class URLSourceReader extends AbstractSourceReader {
     this.chunker.destroy();
     LOG.info(`🛑 [collector/url] Stopped reading from ${this.url}`);
   }
-}
+} 

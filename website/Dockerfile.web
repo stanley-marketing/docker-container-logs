@@ -1,0 +1,22 @@
+# ---- Website Dockerfile ----
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# Install website deps
+COPY website/package*.json ./
+RUN npm ci --omit=dev
+
+# Copy website source
+COPY website .
+
+# Build Next.js (production)
+RUN npm run build
+
+# Use smaller runtime image
+FROM node:20-alpine AS runtime
+WORKDIR /app
+COPY --from=base /app .
+
+EXPOSE 3000
+ENV NODE_ENV=production
+CMD ["npm","start"] 
