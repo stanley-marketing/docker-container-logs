@@ -380,3 +380,30 @@ MIT License - see [LICENSE](LICENSE) file for details.
 [⭐ Star this repo](https://github.com/yourusername/docker-container-logs) if it saved you time!
 
 </div>
+
+---
+
+## 🆕 July 2025 Enhancements
+
+### Range-Resume & File Rotation
+The collector is now **fault-tolerant by default**:
+
+* `--follow` survives log rotation (true *tail -F* semantics)
+* HTTP / HTTPS downloads automatically resume using `Range` headers if the connection drops – perfect for huge archives and flaky links
+
+No extra flags needed – just use `--file /path --follow` or `--url https://…`.
+
+### New Prometheus Metrics
+| Metric | Description | Labels |
+| ------ | ----------- | ------ |
+| `bytes_ingested_total` | Total bytes ingested from all sources | `source_type` (`docker`, `file`, `url`) |
+| `chunks_total` | Total log chunks emitted | `source_type` |
+
+These are available at `/metrics` alongside the existing counters and histograms.
+
+```bash
+curl http://localhost:8000/metrics | grep bytes_ingested_total
+```
+
+### Updated CLI Help
+`npx docker-log-summariser --help` now documents the auto-resume behaviour; there are no new flags, just smarter defaults.

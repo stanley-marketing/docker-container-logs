@@ -78,6 +78,14 @@ yargs(hideBin(process.argv))
     const res = await callApi('/ask', { method: 'POST', body: JSON.stringify(body) });
     console.log(res);
   })
+  .command('search <query>', 'Semantic search summaries', (y) => {
+    y.positional('query', { type: 'string' })
+      .option('limit', { alias: 'l', type: 'number', default: 10 });
+  }, async (args) => {
+    const qs = new URLSearchParams({ q: args.query, limit: args.limit });
+    const data = await callApi(`/search?${qs.toString()}`);
+    console.table(data);
+  })
   .demandCommand()
   .help()
   .strict()

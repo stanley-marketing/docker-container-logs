@@ -1,5 +1,6 @@
 import { GeminiClient } from './gemini.js';
 import { logger } from './utils/logger.js';
+import { qaTokensTotal, qaCostUsdTotal } from './metrics.js';
 
 // eslint-disable-next-line no-unused-vars
 const LOG = logger.child({ module: 'qa' });
@@ -37,6 +38,11 @@ export class QAHandler {
       tokensOut: result.tokensOut,
       costUsd: result.costUsd
     });
+
+    // Increment metrics
+    const tokensTotal = (result.tokensIn || 0) + (result.tokensOut || 0);
+    qaTokensTotal.inc(tokensTotal);
+    qaCostUsdTotal.inc(result.costUsd || 0);
 
     return { id: qaSessionId, answer: result.summary };
   }

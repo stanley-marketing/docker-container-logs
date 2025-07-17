@@ -29,6 +29,11 @@ afterEach(() => {
   metricsRegistry.resetMetrics();
   summariser?.removeAllListeners();
   summariser = null;
+
+  // Clear DB tables to isolate each test
+  if (db?.db) {
+    db.db.exec('DELETE FROM summaries; DELETE FROM chunks;');
+  }
 });
 
 it('should write rows to DB and increment Prometheus metrics', async () => {

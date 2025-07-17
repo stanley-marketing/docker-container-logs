@@ -7,6 +7,7 @@
 
 import Database from 'better-sqlite3';
 import { logger } from './utils/logger.js';
+import { indexSummary } from './vector_search.js';
 
 const LOG = logger.child({ module: 'models' });
 
@@ -228,7 +229,13 @@ export class DatabaseManager {
         summary.costUsd
       );
       
-      LOG.debug('💾 [models] Summary inserted', { 
+      const text = typeof summary.summary === 'string'
+        ? summary.summary
+        : JSON.stringify(summary.summary);
+      // Update in-memory vector index
+      indexSummary(result.lastInsertRowid, text);
+
+      LOG.debug('💾 [models] Summary inserted & indexed', { 
         summaryId: result.lastInsertRowid,
         chunkId: summary.chunkId,
         costUsd: summary.costUsd

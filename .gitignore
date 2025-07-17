@@ -139,3 +139,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 data
+
+# Explicitly ignore Next.js build output in website sub-app
+website/.next/

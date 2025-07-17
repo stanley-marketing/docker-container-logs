@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogSense AI - AI-Powered Log Analysis Platform</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform log chaos into clarity with LogSense AI. AI-powered log analysis for any source - Docker, Kubernetes, files, cloud logs. 30x faster incident resolution.">
+    <meta name="keywords" content="log analysis, AI logs, docker logs, kubernetes logs, log monitoring, incident response, observability, CNCF">
+    <meta name="author" content="LogSense AI">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://logsense.ai/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+    
+    <!-- Redirect to demo.html -->
+    <meta http-equiv="refresh" content="0; url=demo.html">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2496ED;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+    <div class="text-center">
+        <div class="mb-8">
+            <div class="w-16 h-16 bg-blue-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                <span class="text-white text-2xl font-bold">LS</span>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">LogSense AI</h1>
+            <p class="text-gray-600">Loading your log intelligence platform...</p>
+        </div>
+        
+        <div class="loader mb-8"></div>
+        
+        <p class="text-sm text-gray-500">
+            If you're not redirected automatically, 
+            <a href="demo.html" class="text-blue-600 hover:text-blue-800 font-medium">click here</a>
+        </p>
+    </div>
+
+    <script>
+        // Fallback redirect if meta refresh doesn't work
+        setTimeout(function() {
+            window.location.href = 'demo.html';
+        }, 1000);
+        
+        // Analytics for main entry point
+        if (typeof gtag === 'function') {
+            gtag('event', 'page_view', {
+                'page_title': 'Index - Entry Point',
+                'page_location': window.location.href
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import swaggerUI from '@fastify/swagger-ui';
 import { DatabaseManager } from './models.js';
@@ -7,12 +8,19 @@ import { logger } from './utils/logger.js';
 import { summariesQuerySchema, chunkParamsSchema, askBodySchema } from './schema.js';
 import { buildVerifyJwt } from './auth.js';
 import { createQAHandler } from './qa.js';
+import { rebuildIndex, search as vectorSearch } from './vector_search.js';
 
 const LOG = logger.child({ module: 'api' });
 
 export async function buildApi(options = {}) {
   const fastify = Fastify({
     logger: false
+  });
+
+  // Enable CORS (configurable)
+  await fastify.register(cors, {
+    origin: options.corsOrigin || process.env.CORS_ORIGIN || '*',
+    credentials: true
   });
 
   // Register Swagger (OpenAPI) docs
@@ -37,12 +45,20 @@ export async function buildApi(options = {}) {
   await db.initialize();
   fastify.decorate('db', db);
 
+  // Build vector index on startup
+  const allSummaries = db.db.prepare(`SELECT id, summary FROM summaries`).all();
+  rebuildIndex(allSummaries);
+
   // Allow injecting a QA handler for testing
   const qaHandler = options.qaHandler || createQAHandler(db);
   fastify.decorate('qaHandler', qaHandler);
 
-  // JWT verification preHandler
-  const verifyJwt = buildVerifyJwt(process.env.JWT_SECRET || 'changeme');
+  // JWT verification preHandler – require secret
+  const jwtSecret = options.jwtSecret || process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET env var must be set');
+  }
+  const verifyJwt = buildVerifyJwt(jwtSecret);
 
   // Simple health route
   fastify.get('/health', {
@@ -150,6 +166,41 @@ export async function buildApi(options = {}) {
       return { error: 'Chunk not found' };
     }
     return chunk;
+  });
+
+  /**
+   * GET /search?query=
+   */
+  fastify.get('/search', {
+    preHandler: verifyJwt,
+    schema: {
+      tags: ['Search'],
+      summary: 'Semantic search summaries',
+      querystring: {
+        type: 'object',
+        properties: {
+          q: { type: 'string' },
+          limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 }
+        },
+        required: ['q']
+      },
+      response: {
+        200: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer' },
+              score: { type: 'number' }
+            }
+          }
+        }
+      }
+    }
+  }, async (req) => {
+    const { q, limit = 10 } = req.query;
+    const results = vectorSearch(q, limit);
+    return results;
   });
 
   /**

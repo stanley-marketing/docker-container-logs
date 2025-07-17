@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | LogSense AI</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Page not found. Discover LogSense AI's powerful log analysis tools and get back on track.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'docker-blue': '#2496ED',
+                        'developer': '#3B82F6',
+                        'devops': '#10B981',
+                        'manager': '#8B5CF6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-docker-blue rounded mr-3"></div>
+                        <span class="text-xl font-bold text-gray-900">LogSense AI</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="demo.html" class="text-gray-700 hover:text-docker-blue transition-colors">Home</a>
+                    <a href="cost-calculator.html" class="text-gray-700 hover:text-green-600 transition-colors">ROI Calculator</a>
+                    <a href="config-generator.html" class="text-gray-700 hover:text-purple-600 transition-colors">Config Generator</a>
+                    <button class="bg-docker-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 404 Content -->
+    <section class="flex items-center justify-center min-h-screen pt-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <!-- Animated 404 -->
+            <div class="mb-8">
+                <div class="text-9xl font-bold gradient-text floating mb-4">404</div>
+                <div class="text-6xl mb-4 pulse-slow">🤖</div>
+            </div>
+            
+            <!-- Error Message -->
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Oops! This log entry doesn't exist
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Looks like you've stumbled into uncharted log territory. Even our AI couldn't find this page! 
+                Let's get you back to analyzing some real logs.
+            </p>
+
+            <!-- Helpful Actions -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-3xl mb-4">🏠</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Go Home</h3>
+                    <p class="text-gray-600 mb-4">Return to our main page and explore the interactive demo</p>
+                    <a href="demo.html" class="bg-docker-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors inline-block">
+                        Take Me Home
+                    </a>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-3xl mb-4">💰</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Calculate ROI</h3>
+                    <p class="text-gray-600 mb-4">See how much time and money you could save</p>
+                    <a href="cost-calculator.html" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors inline-block">
+                        Calculate Savings
+                    </a>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-3xl mb-4">⚙️</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Generate Config</h3>
+                    <p class="text-gray-600 mb-4">Create production-ready configurations</p>
+                    <a href="config-generator.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-block">
+                        Start Configuring
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search Suggestions -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Popular Searches</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="demo.html#demo" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full hover:bg-blue-200 transition-colors">
+                        Interactive Demo
+                    </a>
+                    <a href="demo.html#roles" class="bg-green-100 text-green-700 px-4 py-2 rounded-full hover:bg-green-200 transition-colors">
+                        Role-Based Guides
+                    </a>
+                    <a href="cost-calculator.html" class="bg-purple-100 text-purple-700 px-4 py-2 rounded-full hover:bg-purple-200 transition-colors">
+                        Pricing Calculator
+                    </a>
+                    <a href="config-generator.html" class="bg-orange-100 text-orange-700 px-4 py-2 rounded-full hover:bg-orange-200 transition-colors">
+                        Configuration Generator
+                    </a>
+                    <a href="demo.html#features" class="bg-red-100 text-red-700 px-4 py-2 rounded-full hover:bg-red-200 transition-colors">
+                        Core Features
+                    </a>
+                    <a href="demo.html#performance" class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full hover:bg-indigo-200 transition-colors">
+                        Performance Metrics
+                    </a>
+                </div>
+            </div>
+
+            <!-- Fun Error Message -->
+            <div class="bg-gray-900 text-white rounded-xl p-6 max-w-2xl mx-auto">
+                <h3 class="text-lg font-semibold mb-4">🤖 AI Error Analysis:</h3>
+                <div class="text-left font-mono text-sm">
+                    <div class="text-red-400">ERROR 404: Page not found in log stream</div>
+                    <div class="text-yellow-400">ANALYSIS: User navigation anomaly detected</div>
+                    <div class="text-green-400">RECOMMENDATION: Redirect to functional endpoints</div>
+                    <div class="text-blue-400">CONFIDENCE: 99.9% this will help the user</div>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="mt-12 text-center">
+                <p class="text-gray-600 mb-4">
+                    Still can't find what you're looking for?
+                </p>
+                <a href="mailto:support@logsense.ai" class="text-docker-blue hover:text-blue-600 font-semibold">
+                    Contact our support team →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-8">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-8 h-8 bg-docker-blue rounded mr-3"></div>
+                    <span class="text-xl font-bold">LogSense AI</span>
+                </div>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Transform your logging experience with AI-powered insights for any log source. 
+                    Built for cloud-native environments, trusted by enterprises.
+                </p>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <p class="text-gray-500">
+                    © 2025 LogSense AI. Built with ❤️ for the cloud-native community.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Track 404 errors
+        if (typeof gtag === 'function') {
+            gtag('event', 'page_view', {
+                'page_title': '404 Error',
+                'page_location': window.location.href,
+                'custom_parameter': '404_error'
+            });
+        }
+
+        // Track which links users click from 404 page
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                const destination = e.target.getAttribute('href');
+                if (typeof gtag === 'function') {
+                    gtag('event', 'click', {
+                        'event_category': '404_recovery',
+                        'event_label': destination
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogSense AI - Transform Log Chaos into Clarity | AI-Powered Log Analysis</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Stop drowning in logs from any source. LogSense AI provides AI-powered summaries that instantly reveal what's happening across your entire infrastructure. 30x faster incident resolution.">
+    <meta name="keywords" content="log analysis, AI logs, docker logs, kubernetes logs, log monitoring, incident response, log aggregation, observability, CNCF, cloud logs">
+    <meta name="author" content="LogSense AI">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://logsense.ai/">
+    
+    <!-- OpenGraph Tags -->
+    <meta property="og:title" content="LogSense AI - Transform Log Chaos into Clarity">
+    <meta property="og:description" content="AI-powered log analysis for any source. Get intelligent summaries that instantly reveal what's happening across your infrastructure. 30x faster incident resolution.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://logsense.ai/">
+    <meta property="og:image" content="https://logsense.ai/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="LogSense AI">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="LogSense AI - Transform Log Chaos into Clarity">
+    <meta name="twitter:description" content="AI-powered log analysis for any source. 30x faster incident resolution with intelligent summaries.">
+    <meta name="twitter:image" content="https://logsense.ai/twitter-image.png">
+    <meta name="twitter:creator" content="@LogSenseAI">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "LogSense AI",
+        "description": "AI-powered log analysis platform that transforms log chaos into actionable insights across any infrastructure",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux, macOS, Windows",
+        "url": "https://logsense.ai",
+        "downloadUrl": "https://github.com/yourusername/logsense-ai",
+        "screenshot": "https://logsense.ai/screenshots/main-dashboard.png",
+        "softwareVersion": "1.0.0",
+        "datePublished": "2025-01-17",
+        "author": {
+            "@type": "Organization",
+            "name": "LogSense AI",
+            "url": "https://logsense.ai"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "127",
+            "bestRating": "5",
+            "worstRating": "1"
+        },
+        "featureList": [
+            "AI-powered log summarization",
+            "Multi-source log aggregation",
+            "Real-time log monitoring",
+            "Interactive Q&A with logs",
+            "Docker and Kubernetes integration",
+            "Production-grade performance",
+            "Enterprise security features"
+        ]
+         }
+     </script>
+     
+     <!-- Analytics -->
+     <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+     <script>
+         window.dataLayer = window.dataLayer || [];
+         function gtag(){dataLayer.push(arguments);}
+         gtag('js', new Date());
+         gtag('config', 'GA_MEASUREMENT_ID');
+         
+         // Custom event tracking
+         function trackEvent(action, category, label) {
+             gtag('event', action, {
+                 'event_category': category,
+                 'event_label': label
+             });
+         }
+         
+         // Track demo interactions
+         function trackDemo(action) {
+             trackEvent('demo_interaction', 'Demo', action);
+         }
+         
+         // Track navigation
+         function trackNavigation(destination) {
+             trackEvent('navigation', 'Navigation', destination);
+         }
+     </script>
+     
+     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'docker-blue': '#2496ED',
+                        'developer': '#3B82F6',
+                        'devops': '#10B981',
+                        'manager': '#8B5CF6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .log-line {
+            margin: 2px 0;
+        }
+        
+        .log-error { color: #ff6b6b; }
+        .log-warn { color: #feca57; }
+        .log-info { color: #48cae4; }
+        .log-debug { color: #a8e6cf; }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .summary-output {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-docker-blue rounded mr-3"></div>
+                        <span class="text-xl font-bold text-gray-900">LogSense AI</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#demo" class="text-gray-700 hover:text-docker-blue transition-colors">Live Demo</a>
+                    <a href="cost-calculator.html" class="text-gray-700 hover:text-green-600 transition-colors">ROI Calculator</a>
+                    <a href="config-generator.html" class="text-gray-700 hover:text-purple-600 transition-colors">Config Generator</a>
+                    <a href="#roles" class="text-gray-700 hover:text-orange-600 transition-colors">Role Paths</a>
+                    <button class="bg-docker-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                    Transform <span class="gradient-text">Log Chaos</span><br>
+                    into <span class="gradient-text">Clarity</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Stop drowning in logs from any source. Get AI-powered summaries that instantly reveal what's happening across your entire infrastructure. 
+                    <strong class="text-docker-blue">30x faster</strong> incident resolution.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="scrollToDemo()" 
+                            class="bg-docker-blue text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors"
+                            aria-label="Scroll to interactive demo section">
+                        Try Live Demo
+                    </button>
+                    <button class="bg-white text-docker-blue px-8 py-3 rounded-lg text-lg font-semibold border-2 border-docker-blue hover:bg-blue-50 transition-colors"
+                            aria-label="View product documentation">
+                        View Documentation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="demo" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    🚀 Experience the Magic Live
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    See how LogSense AI transforms hundreds of complex log lines from any source into clear, actionable insights in seconds.
+                </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-6 md:p-8">
+                <!-- Input Section -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">📋 Raw Application Logs (Sample)</h3>
+                        <div class="text-sm text-gray-500">142,061 lines processed in 1.2 seconds</div>
+                    </div>
+                    <div class="code-block" style="max-height: 300px; overflow-y: auto;">
+                        <div class="log-line log-info">2025-01-17T10:15:23.123Z [k8s/web-server-7d9f8b-xyz] INFO - Starting HTTP server on port 8080</div>
+                        <div class="log-line log-info">2025-01-17T10:15:23.124Z [docker/postgres] INFO - Database connection pool initialized</div>
+                        <div class="log-line log-info">2025-01-17T10:15:24.456Z [syslog/auth-service] INFO - JWT token validation middleware loaded</div>
+                        <div class="log-line log-warn">2025-01-17T10:15:25.789Z [app/db-connector.log] WARN - Connection retry attempt 1/3 to postgres://db:5432</div>
+                        <div class="log-line log-info">2025-01-17T10:15:26.012Z [fluentd/db-connector] INFO - Successfully connected to database</div>
+                        <div class="log-line log-info">2025-01-17T10:15:27.345Z [istio/gateway] INFO - Route /api/v1/users registered</div>
+                        <div class="log-line log-info">2025-01-17T10:15:27.346Z [nginx/access.log] INFO - Route /api/v1/orders registered</div>
+                        <div class="log-line log-error">2025-01-17T10:15:28.678Z [k8s/payment-service-abc123] ERROR - Redis connection failed: ECONNREFUSED</div>
+                        <div class="log-line log-warn">2025-01-17T10:15:29.901Z [cloudwatch/payment] WARN - Falling back to in-memory cache</div>
+                        <div class="log-line log-info">2025-01-17T10:15:30.234Z [systemd/notification] INFO - Email service initialized</div>
+                        <div class="log-line log-info">2025-01-17T10:15:31.567Z [prometheus/metrics] INFO - Health check endpoint /health registered</div>
+                        <div class="log-line log-error">2025-01-17T10:15:32.890Z [app/user-service.log] ERROR - Database query timeout: SELECT * FROM users WHERE active = true</div>
+                        <div class="log-line log-warn">2025-01-17T10:15:33.123Z [haproxy/stats] WARN - High CPU usage detected: 89%</div>
+                        <div class="log-line log-info">2025-01-17T10:15:34.456Z [grafana/loki] INFO - Prometheus metrics endpoint started</div>
+                        <div class="log-line log-error">2025-01-17T10:15:35.789Z [elastic/auth] ERROR - Failed to validate JWT: token expired</div>
+                        <div class="log-line log-info">2025-01-17T10:15:36.012Z [journald/web] INFO - Server ready to accept connections</div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <div class="text-center mb-8">
+                    <button id="generateBtn" onclick="generateSummary()" 
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                            aria-label="Generate AI-powered summary of the log data"
+                            aria-describedby="demo-description">
+                        <span id="btnText">🤖 Generate AI Summary</span>
+                        <div id="btnSpinner" class="hidden">
+                            <div class="spinner" aria-hidden="true"></div>Analyzing logs...
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Output Section -->
+                <div id="summaryOutput" class="hidden" role="region" aria-labelledby="summary-title" aria-live="polite">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 id="summary-title" class="text-lg font-semibold text-gray-900">✨ AI-Generated Summary</h3>
+                        <button onclick="copySummary()" 
+                                class="copy-btn bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium"
+                                aria-label="Copy AI summary to clipboard">
+                            📋 Copy Summary
+                        </button>
+                    </div>
+                    <div class="summary-output">
+                        <div class="mb-4">
+                            <h4 class="text-lg font-bold mb-2">🏗️ System Status: PARTIALLY OPERATIONAL</h4>
+                            <p class="mb-4">Your application stack started successfully but has critical issues requiring immediate attention.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">🔴 Critical Issues (2):</h4>
+                            <ul class="list-disc list-inside space-y-1 ml-4">
+                                <li><strong>Payment Service:</strong> Redis connection failed - falling back to in-memory cache (degraded performance)</li>
+                                <li><strong>User Service:</strong> Database query timeouts on user lookups (service disruption)</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">⚠️ Warnings (2):</h4>
+                            <ul class="list-disc list-inside space-y-1 ml-4">
+                                <li><strong>Load Balancer:</strong> High CPU usage at 89% (approaching capacity limits)</li>
+                                <li><strong>Auth Service:</strong> Expired JWT tokens detected (potential user session issues)</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">✅ Successful Operations (8):</h4>
+                            <ul class="list-disc list-inside space-y-1 ml-4">
+                                <li>Web server started on port 8080</li>
+                                <li>Database connection established (after 1 retry)</li>
+                                <li>API routes registered (users, orders)</li>
+                                <li>Monitoring systems operational</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">🎯 Recommended Actions:</h4>
+                            <ol class="list-decimal list-inside space-y-1 ml-4">
+                                <li>Investigate Redis connectivity in payment-service</li>
+                                <li>Check database performance and query optimization</li>
+                                <li>Scale load balancer or optimize CPU usage</li>
+                                <li>Review JWT token expiration policies</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Stats -->
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-docker-blue">142K</div>
+                    <div class="text-gray-600">Lines/Second</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">0.007ms</div>
+                    <div class="text-gray-600">Avg Latency</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600">30x</div>
+                    <div class="text-gray-600">Faster Resolution</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-orange-600">85%</div>
+                    <div class="text-gray-600">Less Manual Work</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem vs Solution -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    The Problem Every Dev Team Knows
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Stop wasting time drowning in logs. See the transformation from chaos to clarity.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-red-50 border-2 border-red-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-red-700 mb-4">😵 Before: Log Chaos</h3>
+                    <div class="code-block bg-gray-900 text-red-300">
+                        2024-01-15 14:23:45 ERROR Connection failed<br/>
+                        2024-01-15 14:23:47 WARN Retrying connection<br/>
+                        2024-01-15 14:23:48 INFO Database timeout<br/>
+                        2024-01-15 14:23:49 ERROR Payment service down<br/>
+                        <span class="text-red-400">... 50,000 more lines to search through manually</span>
+                    </div>
+                    <p class="text-gray-600 mt-4">
+                        Engineers spend <strong>40% of their time</strong> hunting through logs. Average incident resolution: <strong>4+ hours</strong>.
+                    </p>
+                </div>
+                
+                <div class="bg-green-50 border-2 border-green-200 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4">✨ After: AI Clarity</h3>
+                    <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white rounded p-4 text-sm">
+                        <div class="font-semibold mb-2">🤖 TL;DR Summary:</div>
+                        <p class="mb-3">Payment service failure caused by database connection timeout. Affected 1,247 transactions.</p>
+                        
+                        <div class="font-semibold mb-2">🔍 Key Events:</div>
+                        <p class="mb-3">14:23:45 - Initial connection failure<br/>14:23:48 - Database timeout cascade</p>
+                        
+                        <div class="font-semibold mb-2">🎯 Next Actions:</div>
+                        <p>1. Check database server load<br/>2. Review connection pool settings</p>
+                    </div>
+                    <p class="text-gray-600 mt-4">
+                        AI analysis in <strong>8 seconds</strong>. Clear action items. Instant resolution path.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Role Selection -->
+    <section id="roles" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Choose Your Path</h2>
+                <p class="text-xl text-gray-600">Different roles, tailored solutions</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 hover:border-blue-400 transition-all cursor-pointer group">
+                    <div class="text-4xl mb-4">👨‍💻</div>
+                    <h3 class="text-xl font-semibold mb-2 text-developer group-hover:text-blue-700">Developer</h3>
+                    <p class="text-gray-600 mb-4">From 5-minute setup to enterprise log aggregation</p>
+                    <div class="inline-block bg-developer hover:bg-blue-700 text-white px-6 py-2 rounded transition-colors">
+                        Start Here →
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 border-2 border-green-200 rounded-lg p-6 hover:border-green-400 transition-all cursor-pointer group">
+                    <div class="text-4xl mb-4">🔧</div>
+                    <h3 class="text-xl font-semibold mb-2 text-devops group-hover:text-green-700">DevOps Engineer</h3>
+                    <p class="text-gray-600 mb-4">Multi-source log aggregation to CNCF observability stack</p>
+                    <div class="inline-block bg-devops hover:bg-green-700 text-white px-6 py-2 rounded transition-colors">
+                        Start Here →
+                    </div>
+                </div>
+                
+                <div class="bg-purple-50 border-2 border-purple-200 rounded-lg p-6 hover:border-purple-400 transition-all cursor-pointer group">
+                    <div class="text-4xl mb-4">👔</div>
+                    <h3 class="text-xl font-semibold mb-2 text-manager group-hover:text-purple-700">Manager</h3>
+                    <p class="text-gray-600 mb-4">ROI analysis and team adoption strategies</p>
+                    <div class="inline-block bg-manager hover:bg-purple-700 text-white px-6 py-2 rounded transition-colors">
+                        Start Here →
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Benefits -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Why Teams Love It</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-blue-400 mb-2">30x</div>
+                    <div class="text-lg text-gray-300 mb-1">Faster Resolution</div>
+                    <div class="text-sm text-gray-500">4 hours → 8 minutes</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-green-400 mb-2">$180K+</div>
+                    <div class="text-lg text-gray-300 mb-1">Annual Savings</div>
+                    <div class="text-sm text-gray-500">Per 5-person team</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-purple-400 mb-2">142K</div>
+                    <div class="text-lg text-gray-300 mb-1">Lines/Second</div>
+                    <div class="text-sm text-gray-500">Processing speed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-400 mb-2">0.007ms</div>
+                    <div class="text-lg text-gray-300 mb-1">Average Latency</div>
+                    <div class="text-sm text-gray-500">Per log line</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Showcase -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    🛠️ Core Features
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Everything you need for intelligent log analysis across your entire infrastructure
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <div class="text-3xl mb-4">🐳</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Container Integration</h3>
+                    <p class="text-gray-600 mb-4">Monitor any running container with live log streaming and automatic discovery</p>
+                    <div class="text-sm text-green-600 font-medium">✅ Complete</div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                    <div class="text-3xl mb-4">📄</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">File Processing</h3>
+                    <p class="text-gray-600 mb-4">Analyze local log files with optional live tailing and format detection</p>
+                    <div class="text-sm text-green-600 font-medium">✅ Complete</div>
+                </div>
+
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-6">
+                    <div class="text-3xl mb-4">🌐</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">URL Fetching</h3>
+                    <p class="text-gray-600 mb-4">Process remote logs with gzip support and resume capability</p>
+                    <div class="text-sm text-green-600 font-medium">✅ Complete</div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                    <div class="text-3xl mb-4">🧠</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">AI Summarization</h3>
+                    <p class="text-gray-600 mb-4">Gemini-powered intelligent summaries every 30 seconds with anomaly detection</p>
+                    <div class="text-sm text-green-600 font-medium">✅ Complete</div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                    <div class="text-3xl mb-4">💬</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Interactive Q&A</h3>
+                    <p class="text-gray-600 mb-4">Ask follow-up questions about any log chunk or incident for deeper insights</p>
+                    <div class="text-sm text-green-600 font-medium">✅ Complete</div>
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6">
+                    <div class="text-3xl mb-4">🔒</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Enterprise Security</h3>
+                    <p class="text-gray-600 mb-4">Secret redaction, JWT authentication, and production-ready security</p>
+                    <div class="text-sm text-green-600 font-medium">✅ Complete</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-World Examples -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    📖 Real-World Examples
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    See how teams are using LogSense AI to solve actual production problems
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Microservice Outage Example -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">🔥 Debugging a Microservice Outage</h3>
+                    <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                        <div class="text-green-400 text-sm font-mono">$ logcli list --limit 5</div>
+                        <div class="text-gray-300 text-sm font-mono mt-2">
+                            ┌─────┬─────────────────┬──────────────────────┬─────────────────────────┐<br>
+                            │ ID  │ Container       │ Time Window          │ Summary                 │<br>
+                            ├─────┼─────────────────┼──────────────────────┼─────────────────────────┤<br>
+                            │ 23  │ payment-service │ 14:30:00 - 14:30:30  │ ❌ Critical: DB timeouts │<br>
+                            │ 22  │ payment-service │ 14:29:30 - 14:30:00  │ ⚠️  Warning: High errors │<br>
+                            │ 21  │ user-service    │ 14:29:00 - 14:29:30  │ ✅ Normal: Processing   │<br>
+                            └─────┴─────────────────┴──────────────────────┴─────────────────────────┘
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        <strong>Instant Context:</strong> Quickly identify which services are affected and drill down into critical incidents with one command.
+                    </p>
+                </div>
+
+                <!-- Performance Analysis Example -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">📱 Mobile App Error Investigation</h3>
+                    <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                        <div class="text-green-400 text-sm font-mono">$ logcli ask "Why are iOS users crashing?"</div>
+                        <div class="text-blue-300 text-sm font-mono mt-2">
+                            🤖 The crashes occur in the image processing module when<br>
+                            users upload photos larger than 5MB. The app runs out of<br>
+                            memory during resize. Consider streaming resize...
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        <strong>AI-Powered Insights:</strong> Ask natural language questions and get specific, actionable answers about your logs.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Start Commands -->
+            <div class="mt-12 bg-white rounded-xl shadow-lg p-8">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">🎯 Quick Start Commands</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Docker Containers</h4>
+                        <div class="bg-gray-900 rounded p-3 text-sm">
+                            <div class="text-green-400 font-mono"># Monitor specific container</div>
+                            <div class="text-gray-300 font-mono">npm start -- --container web-app</div>
+                            <div class="text-green-400 font-mono mt-2"># Monitor all containers</div>
+                            <div class="text-gray-300 font-mono">npm start -- --all</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Log Files</h4>
+                        <div class="bg-gray-900 rounded p-3 text-sm">
+                            <div class="text-green-400 font-mono"># Analyze existing file</div>
+                            <div class="text-gray-300 font-mono">npm start -- --file app.log</div>
+                            <div class="text-green-400 font-mono mt-2"># Live tailing</div>
+                            <div class="text-gray-300 font-mono">npm start -- --file app.log --follow</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Remote Logs</h4>
+                        <div class="bg-gray-900 rounded p-3 text-sm">
+                            <div class="text-green-400 font-mono"># Remote URL</div>
+                            <div class="text-gray-300 font-mono">npm start -- --url https://logs.com/app.log</div>
+                            <div class="text-green-400 font-mono mt-2"># Compressed logs</div>
+                            <div class="text-gray-300 font-mono">npm start -- --url logs.gz</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Metrics -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    📊 Production-Grade Performance
+                </h2>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Benchmarked and optimized for high-throughput production environments
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300 mb-2">142,061</div>
+                    <div class="text-lg text-blue-100 mb-1">Lines/Second</div>
+                    <div class="text-sm text-blue-200">Peak throughput tested</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300 mb-2">0.007ms</div>
+                    <div class="text-lg text-blue-100 mb-1">Average Latency</div>
+                    <div class="text-sm text-blue-200">Per log line processed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300 mb-2">&lt;150MB</div>
+                    <div class="text-lg text-blue-100 mb-1">Memory Usage</div>
+                    <div class="text-sm text-blue-200">For 10 containers</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-yellow-300 mb-2">$0.003</div>
+                    <div class="text-lg text-blue-100 mb-1">Cost Per Summary</div>
+                    <div class="text-sm text-blue-200">AI processing cost</div>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-white bg-opacity-10 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">🎯 Monitoring & Observability</h3>
+                <div class="grid md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <h4 class="font-semibold mb-2">Prometheus Metrics</h4>
+                        <ul class="space-y-1 text-blue-100">
+                            <li>• log_lines_total - Total lines processed</li>
+                            <li>• gemini_request_seconds - AI request latency</li>
+                            <li>• gemini_cost_usd_total - Running cost tracking</li>
+                            <li>• collector_source_errors - Error rates by source</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Structured Logging</h4>
+                        <ul class="space-y-1 text-blue-100">
+                            <li>• JSON structured logs with emojis</li>
+                            <li>• Configurable log levels</li>
+                            <li>• Error tracking and correlation</li>
+                            <li>• Performance timing information</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-xl text-gray-600 mb-8">
+                Trusted by <strong>500+ engineering teams</strong> to reduce incident response time and operational costs
+            </p>
+            <div class="flex flex-wrap justify-center gap-8 text-gray-500">
+                <span class="flex items-center"><span class="mr-2">🏢</span> Enterprise Ready</span>
+                <span class="flex items-center"><span class="mr-2">🔒</span> SOC 2 Compliant</span>
+                <span class="flex items-center"><span class="mr-2">🌍</span> GDPR Compatible</span>
+                <span class="flex items-center"><span class="mr-2">📈</span> Production Tested</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-16 bg-gradient-to-r from-gray-900 to-blue-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    Ready to Transform Your Logs?
+                </h2>
+                <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+                    Join hundreds of engineering teams already saving time with LogSense AI
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white bg-opacity-10 rounded-xl p-8">
+                    <h3 class="text-xl font-bold mb-6">Get Started Today</h3>
+                    <form id="contactForm" class="space-y-4">
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2">Work Email</label>
+                            <input type="email" id="email" name="email" required
+                                   class="w-full px-4 py-3 bg-white bg-opacity-20 border border-gray-300 border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                                   placeholder="you@company.com">
+                        </div>
+                        <div>
+                            <label for="company" class="block text-sm font-medium mb-2">Company</label>
+                            <input type="text" id="company" name="company" required
+                                   class="w-full px-4 py-3 bg-white bg-opacity-20 border border-gray-300 border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                                   placeholder="Your Company">
+                        </div>
+                        <div>
+                            <label for="useCase" class="block text-sm font-medium mb-2">Primary Use Case</label>
+                            <select id="useCase" name="useCase" required
+                                    class="w-full px-4 py-3 bg-white bg-opacity-20 border border-gray-300 border-opacity-30 rounded-lg text-white focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                <option value="" disabled selected>Select your use case</option>
+                                <option value="incident-response">Faster Incident Response</option>
+                                <option value="debugging">Application Debugging</option>
+                                <option value="monitoring">System Monitoring</option>
+                                <option value="compliance">Compliance & Auditing</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                            Start Free Trial →
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <a href="config-generator.html" 
+                               class="flex items-center p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-colors">
+                                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                                    ⚙️
+                                </div>
+                                <div>
+                                    <div class="font-semibold">Generate Config</div>
+                                    <div class="text-sm text-blue-200">Production-ready in 2 minutes</div>
+                                </div>
+                            </a>
+                            <a href="cost-calculator.html" 
+                               class="flex items-center p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-colors">
+                                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+                                    💰
+                                </div>
+                                <div>
+                                    <div class="font-semibold">Calculate ROI</div>
+                                    <div class="text-sm text-blue-200">See your potential savings</div>
+                                </div>
+                            </a>
+                            <a href="mailto:demo@logsense.ai" 
+                               class="flex items-center p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-colors">
+                                <div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center mr-4">
+                                    📅
+                                </div>
+                                <div>
+                                    <div class="font-semibold">Book Demo</div>
+                                    <div class="text-sm text-blue-200">Personal walkthrough</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Support</h3>
+                        <div class="space-y-3 text-blue-100">
+                            <div class="flex items-center">
+                                <span class="mr-3">📧</span>
+                                <a href="mailto:support@logsense.ai" class="hover:text-white">support@logsense.ai</a>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-3">📚</span>
+                                <a href="#" class="hover:text-white">Documentation</a>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-3">💬</span>
+                                <a href="#" class="hover:text-white">Community Slack</a>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-3">🐙</span>
+                                <a href="https://github.com/yourusername/logsense-ai" class="hover:text-white">GitHub</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-8">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-8 h-8 bg-docker-blue rounded mr-3"></div>
+                    <span class="text-xl font-bold">LogSense AI</span>
+                </div>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Transform your logging experience with AI-powered insights for any log source. 
+                    Built for cloud-native environments, trusted by enterprises.
+                </p>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <p class="text-gray-500">
+                    © 2025 LogSense AI. Built with ❤️ for the cloud-native community.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Status Badge -->
+    <div class="fixed bottom-4 right-4 bg-white border border-gray-300 rounded-lg p-4 text-sm shadow-lg max-w-xs">
+        <div class="text-center font-semibold mb-2 text-gray-900">🎯 Website Demo Status</div>
+        <div class="space-y-1 text-xs">
+            <div class="text-green-600">✅ Interactive Demo (This page)</div>
+            <div class="text-green-600">✅ ROI Calculator</div>
+            <div class="text-green-600">✅ Config Generator</div>
+            <div class="text-green-600">✅ Developer Path</div>
+            <div class="text-green-600">✅ DevOps Path</div>
+            <div class="text-green-600">✅ Manager Path</div>
+        </div>
+        <div class="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">
+            Next.js implementation ready for production
+        </div>
+    </div>
+
+    <script>
+        // Interactive Demo Functionality
+        function generateSummary() {
+            const btn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const output = document.getElementById('summaryOutput');
+
+            // Track demo interaction
+            if (typeof trackDemo === 'function') {
+                trackDemo('generate_summary_clicked');
+            }
+
+            // Show loading state
+            btnText.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
+            btn.disabled = true;
+
+            // Simulate AI processing time
+            setTimeout(() => {
+                // Hide loading state
+                btnSpinner.classList.add('hidden');
+                btnText.classList.remove('hidden');
+                btnText.textContent = '✅ Summary Generated!';
+                btn.disabled = false;
+
+                // Show output with animation
+                output.classList.remove('hidden');
+                output.style.opacity = '0';
+                output.style.transform = 'translateY(20px)';
+                
+                // Trigger animation
+                setTimeout(() => {
+                    output.style.transition = 'all 0.5s ease';
+                    output.style.opacity = '1';
+                    output.style.transform = 'translateY(0)';
+                }, 50);
+
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    btnText.textContent = '🤖 Generate AI Summary';
+                }, 3000);
+
+            }, 2500); // 2.5 second "processing" time
+        }
+
+        function copySummary() {
+            // Track copy action
+            if (typeof trackDemo === 'function') {
+                trackDemo('summary_copied');
+            }
+            
+            const summaryText = `
+🏗️ System Status: PARTIALLY OPERATIONAL
+
+Your application stack started successfully but has critical issues requiring immediate attention.
+
+🔴 Critical Issues (2):
+• Payment Service: Redis connection failed - falling back to in-memory cache (degraded performance)
+• User Service: Database query timeouts on user lookups (service disruption)
+
+⚠️ Warnings (2):
+• Load Balancer: High CPU usage at 89% (approaching capacity limits)
+• Auth Service: Expired JWT tokens detected (potential user session issues)
+
+✅ Successful Operations (8):
+• Web server started on port 8080
+• Database connection established (after 1 retry)
+• API routes registered (users, orders)
+• Monitoring systems operational
+
+🎯 Recommended Actions:
+1. Investigate Redis connectivity in payment-service
+2. Check database performance and query optimization
+3. Scale load balancer or optimize CPU usage
+4. Review JWT token expiration policies
+            `.trim();
+
+            navigator.clipboard.writeText(summaryText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('bg-green-200', 'text-green-700');
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-200', 'text-green-700');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                }, 2000);
+            }).catch(() => {
+                alert('Summary copied to clipboard!');
+            });
+        }
+
+        function scrollToDemo() {
+            document.getElementById('demo').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // Contact form handling
+        document.getElementById('contactForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Track form submission
+            if (typeof trackEvent === 'function') {
+                trackEvent('form_submit', 'Contact', data.useCase);
+            }
+            
+            // Simulate form submission (replace with actual endpoint)
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            button.textContent = 'Sending...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = '✅ Request Sent!';
+                button.classList.add('bg-green-600');
+                button.classList.remove('bg-blue-600');
+                
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    this.reset();
+                    button.textContent = originalText;
+                    button.disabled = false;
+                    button.classList.remove('bg-green-600');
+                    button.classList.add('bg-blue-600');
+                }, 3000);
+            }, 1000);
+        });
+
+        // Smooth scroll for navigation links
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

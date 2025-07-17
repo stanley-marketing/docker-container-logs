@@ -9,7 +9,7 @@ import Docker from 'dockerode';
 import { DockerSourceReader, FileSourceReader, URLSourceReader } from './sources.js';
 import { EventEmitter } from 'events';
 import { logger } from './utils/logger.js';
-import { logLinesTotal } from './metrics.js';
+import { logLinesTotal, bytesIngestedTotal, chunksTotal } from './metrics.js';
 
 const LOG = logger.child({ module: 'collector' });
 
@@ -28,9 +28,10 @@ const ANSI_PATTERN = /\x1b\[[0-9;]*m/g;
  * Chunker class that buffers log lines and emits chunks when size/time limits are reached
  */
 export class Chunker extends EventEmitter {
-  constructor(containerId, maxAge = 30000, maxSize = 8192) {
+  constructor(containerId, maxAge = 30000, maxSize = 8192, sourceType = 'docker') {
     super();
     this.containerId = containerId;
+    this.sourceType = sourceType;
     this.maxAge = maxAge;
     this.maxSize = maxSize;
     this.buffer = '';
@@ -61,7 +62,11 @@ export class Chunker extends EventEmitter {
     logLinesTotal.inc();
     
     this.buffer += redactedLine;
-    this.sizeBytes += Buffer.byteLength(redactedLine, 'utf8');
+    const bytes = Buffer.byteLength(redactedLine, 'utf8');
+    this.sizeBytes += bytes;
+
+    // Increment bytes ingested counter
+    bytesIngestedTotal.inc({ source_type: this.sourceType }, bytes);
     
     // Check if we need to flush due to size
     if (this.sizeBytes >= this.maxSize) {
@@ -103,6 +108,9 @@ export class Chunker extends EventEmitter {
       reason 
     });
     
+    // Increment chunks total metric
+    chunksTotal.inc({ source_type: this.sourceType });
+
     this.emit('chunk', chunk);
     return chunk;
   }
@@ -165,10 +173,10 @@ export class LogCollector extends EventEmitter {
       } else if (options.url) {
         await this._startUrlSource(options.url, options);
       } else {
-        const containers = await this._discoverContainers(options);
-        LOG.info(`🔍 [collector] Found ${containers.length} containers to monitor`);
-        for (const container of containers) {
-          await this._attachToContainer(container);
+      const containers = await this._discoverContainers(options);
+      LOG.info(`🔍 [collector] Found ${containers.length} containers to monitor`);
+      for (const container of containers) {
+        await this._attachToContainer(container);
         }
       }
     } catch (error) {
@@ -190,8 +198,8 @@ export class LogCollector extends EventEmitter {
     this.running = false;
     
     for (const reader of this.sourceReaders.values()) {
-      await reader.stop();
-    }
+        await reader.stop();
+      }
 
     this.sourceReaders.clear();
     

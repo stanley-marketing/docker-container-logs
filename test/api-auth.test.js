@@ -9,7 +9,9 @@ let request;
 
 beforeAll(async () => {
   process.env.JWT_SECRET = SECRET;
-  api = await buildApi({ dbPath: 'data/test-auth.db' });
+  process.env.GEMINI_API_KEY = 'dummy-key';
+  const qaStub = { ask: async () => ({ id: 1, answer: 'stub' }) };
+  api = await buildApi({ dbPath: 'data/test-auth.db', qaHandler: qaStub });
   await api.ready();
   request = supertest(api.server);
 });
@@ -17,6 +19,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await api.close();
   delete process.env.JWT_SECRET;
+  delete process.env.GEMINI_API_KEY;
 });
 
 describe('JWT middleware', () => {

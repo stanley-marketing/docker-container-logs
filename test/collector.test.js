@@ -137,8 +137,7 @@ describe('LogCollector', () => {
 
   it('should create collector with default options', () => {
     expect(collector.running).toBe(false);
-    expect(collector.chunkers.size).toBe(0);
-    expect(collector.containers.size).toBe(0);
+    expect(collector.sourceReaders.size).toBe(0);
   });
 
   it('should discover containers', async () => {

@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Generator - LogSense AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'docker-blue': '#2496ED',
+                        'developer': '#3B82F6',
+                        'devops': '#10B981',
+                        'manager': '#8B5CF6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .config-section {
+            transition: all 0.3s ease;
+        }
+        
+        .config-section.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', monospace;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .step-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .step-indicator.active {
+            background: #2496ED;
+            color: white;
+        }
+        
+        .step-indicator.completed {
+            background: #10B981;
+            color: white;
+        }
+        
+        .step-line {
+            height: 2px;
+            background: #e5e7eb;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .step-line.completed {
+            background: #10B981;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-docker-blue rounded mr-3"></div>
+                        <span class="text-xl font-bold text-gray-900">LogSense AI</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="demo.html" class="text-gray-700 hover:text-docker-blue transition-colors">← Back to Demo</a>
+                    <a href="cost-calculator.html" class="text-gray-700 hover:text-docker-blue transition-colors">ROI Calculator</a>
+                    <button class="bg-docker-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-12 pb-8 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                ⚙️ <span class="gradient-text">Configuration Generator</span>
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Generate production-ready configurations for LogSense AI. 
+                Choose your deployment method and get tailored configs for any log source in seconds.
+            </p>
+        </div>
+    </section>
+
+    <!-- Progress Steps -->
+    <section class="py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div id="step1" class="step-indicator active">1</div>
+                    <span class="ml-2 text-sm font-medium text-gray-700">Setup</span>
+                </div>
+                <div id="line1" class="step-line"></div>
+                <div class="flex items-center">
+                    <div id="step2" class="step-indicator bg-gray-200 text-gray-500">2</div>
+                    <span class="ml-2 text-sm font-medium text-gray-500">Configure</span>
+                </div>
+                <div id="line2" class="step-line"></div>
+                <div class="flex items-center">
+                    <div id="step3" class="step-indicator bg-gray-200 text-gray-500">3</div>
+                    <span class="ml-2 text-sm font-medium text-gray-500">Deploy</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Wizard -->
+    <section class="py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Step 1: Choose Deployment Type -->
+            <div id="step1Content" class="step-content">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🚀 Choose Your Deployment Method</h2>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="deployment-option p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 transition-all" 
+                             onclick="selectDeployment('docker-compose')">
+                            <div class="text-center">
+                                <div class="text-4xl mb-4">🐳</div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Docker Compose</h3>
+                                                    <p class="text-gray-600 text-sm">Perfect for development and small production setups</p>
+                    <div class="mt-4 text-sm text-blue-600">
+                        ✓ Quick setup<br>
+                        ✓ Multi-source logs<br>
+                        ✓ Single-node production
+                    </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deployment-option p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-green-400 transition-all" 
+                             onclick="selectDeployment('kubernetes')">
+                            <div class="text-center">
+                                <div class="text-4xl mb-4">☸️</div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Kubernetes</h3>
+                                                    <p class="text-gray-600 text-sm">Scalable CNCF-compatible deployment with high availability</p>
+                    <div class="mt-4 text-sm text-green-600">
+                        ✓ Auto-scaling<br>
+                        ✓ High availability<br>
+                        ✓ CNCF compatible
+                    </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deployment-option p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all" 
+                             onclick="selectDeployment('standalone')">
+                            <div class="text-center">
+                                <div class="text-4xl mb-4">🔧</div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Standalone</h3>
+                                <p class="text-gray-600 text-sm">Direct installation on VM or bare metal</p>
+                                <div class="mt-4 text-sm text-purple-600">
+                                    ✓ Simple setup<br>
+                                    ✓ Full control<br>
+                                    ✓ Custom environments
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Configuration Options -->
+            <div id="step2Content" class="step-content hidden">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">⚙️ Configure Your Setup</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Data Sources -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Data Sources</h3>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="source-docker" checked class="mr-3 rounded">
+                                    <span>Docker containers</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="source-k8s" checked class="mr-3 rounded">
+                                    <span>Kubernetes pods</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="source-file" class="mr-3 rounded">
+                                    <span>Application log files</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="source-syslog" class="mr-3 rounded">
+                                    <span>Syslog streams</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="source-cloud" class="mr-3 rounded">
+                                    <span>Cloud provider logs (AWS/GCP/Azure)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="source-url" class="mr-3 rounded">
+                                    <span>HTTP/HTTPS endpoints</span>
+                                </label>
+                            </div>
+
+                            <!-- API Configuration -->
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 mt-6">🌐 API Settings</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">API Port</label>
+                                    <input type="number" id="api-port" value="8000" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Queue Size</label>
+                                    <input type="number" id="max-queue" value="1000" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Database & Storage -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">💾 Database & Storage</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Database Path</label>
+                                    <input type="text" id="db-path" value="./data/docker-logs.db" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Log Retention (days)</label>
+                                    <input type="number" id="retention" value="30" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                            </div>
+
+                            <!-- AI Model Configuration -->
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 mt-6">🤖 AI Model</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Model Provider</label>
+                                    <select id="ai-provider" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                        <option value="gemini">Google Gemini (Recommended)</option>
+                                        <option value="openai">OpenAI GPT</option>
+                                        <option value="anthropic">Anthropic Claude</option>
+                                        <option value="local">Local Model</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">API Key (Optional for demo)</label>
+                                    <input type="password" id="ai-key" placeholder="Enter your API key" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between mt-8">
+                        <button onclick="goToStep(1)" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+                            ← Back
+                        </button>
+                        <button onclick="generateConfig()" class="bg-docker-blue text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                            Generate Configuration →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Generated Configuration -->
+            <div id="step3Content" class="step-content hidden">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🎉 Your Configuration is Ready!</h2>
+                    
+                    <!-- Configuration Tabs -->
+                    <div class="mb-6">
+                        <div class="flex space-x-1">
+                            <button onclick="showConfigTab('main')" id="tab-main" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-100 text-blue-700">
+                                Main Config
+                            </button>
+                            <button onclick="showConfigTab('env')" id="tab-env" class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                Environment
+                            </button>
+                            <button onclick="showConfigTab('instructions')" id="tab-instructions" class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                Setup Instructions
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Content -->
+                    <div id="config-main" class="config-tab">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 id="config-title" class="text-lg font-semibold text-gray-900">Docker Compose Configuration</h3>
+                            <button onclick="copyConfig('main')" class="copy-btn bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                📋 Copy Configuration
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg overflow-hidden">
+                            <pre id="config-content" class="code-block p-4 text-sm text-gray-100"></pre>
+                        </div>
+                    </div>
+
+                    <div id="config-env" class="config-tab hidden">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Environment Variables</h3>
+                            <button onclick="copyConfig('env')" class="copy-btn bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                📋 Copy .env File
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 rounded-lg overflow-hidden">
+                            <pre id="env-content" class="code-block p-4 text-sm text-gray-100"></pre>
+                        </div>
+                    </div>
+
+                    <div id="config-instructions" class="config-tab hidden">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Setup Instructions</h3>
+                            <button onclick="copyConfig('instructions')" class="copy-btn bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                📋 Copy Instructions
+                            </button>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <div id="instructions-content" class="prose max-w-none"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between mt-8">
+                        <button onclick="goToStep(2)" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+                            ← Modify Configuration
+                        </button>
+                        <div class="flex space-x-4">
+                            <button onclick="downloadConfig()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                                📁 Download All Files
+                            </button>
+                            <button onclick="goToStep(1)" class="bg-docker-blue text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                                🔄 Start Over
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let selectedDeployment = null;
+
+        function selectDeployment(type) {
+            selectedDeployment = type;
+            
+            // Update UI
+            document.querySelectorAll('.deployment-option').forEach(option => {
+                option.classList.remove('border-blue-400', 'border-green-400', 'border-purple-400', 'bg-blue-50', 'bg-green-50', 'bg-purple-50');
+                option.classList.add('border-gray-200');
+            });
+            
+            const selected = event.currentTarget;
+            if (type === 'docker-compose') {
+                selected.classList.add('border-blue-400', 'bg-blue-50');
+            } else if (type === 'kubernetes') {
+                selected.classList.add('border-green-400', 'bg-green-50');
+            } else if (type === 'standalone') {
+                selected.classList.add('border-purple-400', 'bg-purple-50');
+            }
+            
+            // Auto-advance to step 2
+            setTimeout(() => goToStep(2), 500);
+        }
+
+        function goToStep(step) {
+            // Hide all step contents
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show selected step content
+            document.getElementById(`step${step}Content`).classList.remove('hidden');
+            
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById(`step${i}`);
+                const line = document.getElementById(`line${i}`);
+                
+                indicator.classList.remove('active', 'completed', 'bg-gray-200', 'text-gray-500');
+                
+                if (i < step) {
+                    indicator.classList.add('completed');
+                    if (line) line.classList.add('completed');
+                } else if (i === step) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.add('bg-gray-200', 'text-gray-500');
+                    if (line) line.classList.remove('completed');
+                }
+            }
+        }
+
+        function generateConfig() {
+            goToStep(3);
+            
+            const config = {
+                deployment: selectedDeployment,
+                apiPort: document.getElementById('api-port').value,
+                maxQueue: document.getElementById('max-queue').value,
+                dbPath: document.getElementById('db-path').value,
+                retention: document.getElementById('retention').value,
+                aiProvider: document.getElementById('ai-provider').value,
+                aiKey: document.getElementById('ai-key').value,
+                sources: {
+                    docker: document.getElementById('source-docker').checked,
+                    file: document.getElementById('source-file').checked,
+                    url: document.getElementById('source-url').checked,
+                    syslog: document.getElementById('source-syslog').checked
+                }
+            };
+
+            if (selectedDeployment === 'docker-compose') {
+                generateDockerComposeConfig(config);
+            } else if (selectedDeployment === 'kubernetes') {
+                generateKubernetesConfig(config);
+            } else if (selectedDeployment === 'standalone') {
+                generateStandaloneConfig(config);
+            }
+        }
+
+        function generateDockerComposeConfig(config) {
+            document.getElementById('config-title').textContent = 'Docker Compose Configuration';
+            
+            const dockerCompose = `version: '3.8'
+
+services:
+  docker-log-summariser:
+    image: docker-log-summariser:latest
+    container_name: docker-log-summariser
+    ports:
+      - "${config.apiPort}:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - API_PORT=${config.apiPort}
+      - MAX_QUEUE_SIZE=${config.maxQueue}
+      - DB_PATH=${config.dbPath}
+      - LOG_RETENTION_DAYS=${config.retention}
+      - AI_PROVIDER=${config.aiProvider}
+      ${config.aiKey ? `- AI_API_KEY=${config.aiKey}` : '# - AI_API_KEY=your_api_key_here'}
+      - ENABLE_DOCKER_SOURCE=${config.sources.docker}
+      - ENABLE_FILE_SOURCE=${config.sources.file}
+      - ENABLE_URL_SOURCE=${config.sources.url}
+      - ENABLE_SYSLOG_SOURCE=${config.sources.syslog}
+    restart: unless-stopped
+    command: ["node", "src/index.js", "--all", "--api"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Add a reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: log-summariser-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - docker-log-summariser
+    restart: unless-stopped
+
+volumes:
+  log_data:
+    driver: local`;
+
+            const envFile = `# Docker Log Summariser Configuration
+API_PORT=${config.apiPort}
+MAX_QUEUE_SIZE=${config.maxQueue}
+DB_PATH=${config.dbPath}
+LOG_RETENTION_DAYS=${config.retention}
+AI_PROVIDER=${config.aiProvider}
+${config.aiKey ? `AI_API_KEY=${config.aiKey}` : '# AI_API_KEY=your_api_key_here'}
+
+# Data Source Configuration
+ENABLE_DOCKER_SOURCE=${config.sources.docker}
+ENABLE_FILE_SOURCE=${config.sources.file}
+ENABLE_URL_SOURCE=${config.sources.url}
+ENABLE_SYSLOG_SOURCE=${config.sources.syslog}
+
+# Optional: Advanced Configuration
+# GEMINI_MODEL=gemini-1.5-flash
+# OPENAI_MODEL=gpt-4
+# LOG_LEVEL=info
+# METRICS_ENABLED=true`;
+
+            const instructions = `<h3>🚀 Quick Start Guide</h3>
+<ol class="list-decimal list-inside space-y-2">
+  <li><strong>Save the configuration</strong>: Save the docker-compose.yml and .env files in your project directory</li>
+  <li><strong>Create data directory</strong>: <code>mkdir -p data logs</code></li>
+  <li><strong>Set API key</strong>: Update the .env file with your AI provider API key</li>
+  <li><strong>Start the service</strong>: <code>docker-compose up -d</code></li>
+  <li><strong>Verify installation</strong>: Visit <code>http://localhost:${config.apiPort}</code></li>
+</ol>
+
+<h3 class="mt-6">📋 Commands</h3>
+<div class="bg-gray-100 p-4 rounded-lg font-mono text-sm space-y-1">
+  <div># Start services</div>
+  <div>docker-compose up -d</div>
+  <div></div>
+  <div># View logs</div>
+  <div>docker-compose logs -f docker-log-summariser</div>
+  <div></div>
+  <div># Stop services</div>
+  <div>docker-compose down</div>
+  <div></div>
+  <div># Update configuration</div>
+  <div>docker-compose restart docker-log-summariser</div>
+</div>
+
+<h3 class="mt-6">🔧 Customization</h3>
+<ul class="list-disc list-inside space-y-1">
+  <li>Modify port bindings in docker-compose.yml</li>
+  <li>Add volume mounts for additional log sources</li>
+  <li>Configure nginx proxy for SSL termination</li>
+  <li>Set up log rotation and backup strategies</li>
+</ul>`;
+
+            document.getElementById('config-content').textContent = dockerCompose;
+            document.getElementById('env-content').textContent = envFile;
+            document.getElementById('instructions-content').innerHTML = instructions;
+        }
+
+        function generateKubernetesConfig(config) {
+            document.getElementById('config-title').textContent = 'Kubernetes Configuration';
+            
+            const k8sConfig = `# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: docker-log-summariser
+
+---
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-summariser-config
+  namespace: docker-log-summariser
+data:
+  API_PORT: "${config.apiPort}"
+  MAX_QUEUE_SIZE: "${config.maxQueue}"
+  DB_PATH: "${config.dbPath}"
+  LOG_RETENTION_DAYS: "${config.retention}"
+  AI_PROVIDER: "${config.aiProvider}"
+  ENABLE_DOCKER_SOURCE: "${config.sources.docker}"
+  ENABLE_FILE_SOURCE: "${config.sources.file}"
+  ENABLE_URL_SOURCE: "${config.sources.url}"
+  ENABLE_SYSLOG_SOURCE: "${config.sources.syslog}"
+
+---
+# Secret for AI API Key
+apiVersion: v1
+kind: Secret
+metadata:
+  name: log-summariser-secrets
+  namespace: docker-log-summariser
+type: Opaque
+stringData:
+  AI_API_KEY: "${config.aiKey || 'your_api_key_here'}"
+
+---
+# Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: log-summariser-data
+  namespace: docker-log-summariser
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-log-summariser
+  namespace: docker-log-summariser
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: docker-log-summariser
+  template:
+    metadata:
+      labels:
+        app: docker-log-summariser
+    spec:
+      containers:
+      - name: log-summariser
+        image: docker-log-summariser:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: API_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: log-summariser-config
+              key: API_PORT
+        - name: AI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: log-summariser-secrets
+              key: AI_API_KEY
+        envFrom:
+        - configMapRef:
+            name: log-summariser-config
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: log-summariser-data
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-log-summariser-service
+  namespace: docker-log-summariser
+spec:
+  selector:
+    app: docker-log-summariser
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docker-log-summariser-ingress
+  namespace: docker-log-summariser
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - logs.yourdomain.com
+    secretName: log-summariser-tls
+  rules:
+  - host: logs.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: docker-log-summariser-service
+            port:
+              number: 80`;
+
+            const envFile = `# Kubernetes deployment uses ConfigMaps and Secrets
+# Update the ConfigMap and Secret resources in the YAML instead
+
+# For local development, you can still use this .env file:
+API_PORT=${config.apiPort}
+MAX_QUEUE_SIZE=${config.maxQueue}
+AI_PROVIDER=${config.aiProvider}
+${config.aiKey ? `AI_API_KEY=${config.aiKey}` : '# AI_API_KEY=your_api_key_here'}`;
+
+            const instructions = `<h3>🚀 Kubernetes Deployment Guide</h3>
+<ol class="list-decimal list-inside space-y-2">
+  <li><strong>Prerequisites</strong>: Ensure you have kubectl configured and access to a K8s cluster</li>
+  <li><strong>Save configuration</strong>: Save the YAML as <code>docker-log-summariser.yaml</code></li>
+  <li><strong>Update secrets</strong>: Replace the AI_API_KEY in the Secret section</li>
+  <li><strong>Update ingress</strong>: Change <code>logs.yourdomain.com</code> to your domain</li>
+  <li><strong>Deploy</strong>: <code>kubectl apply -f docker-log-summariser.yaml</code></li>
+</ol>
+
+<h3 class="mt-6">📋 Commands</h3>
+<div class="bg-gray-100 p-4 rounded-lg font-mono text-sm space-y-1">
+  <div># Deploy the application</div>
+  <div>kubectl apply -f docker-log-summariser.yaml</div>
+  <div></div>
+  <div># Check deployment status</div>
+  <div>kubectl get pods -n docker-log-summariser</div>
+  <div></div>
+  <div># View logs</div>
+  <div>kubectl logs -f deployment/docker-log-summariser -n docker-log-summariser</div>
+  <div></div>
+  <div># Scale deployment</div>
+  <div>kubectl scale deployment docker-log-summariser --replicas=3 -n docker-log-summariser</div>
+</div>
+
+<h3 class="mt-6">🔧 Production Considerations</h3>
+<ul class="list-disc list-inside space-y-1">
+  <li>Set up proper RBAC for Docker socket access</li>
+  <li>Configure resource limits based on your workload</li>
+  <li>Set up monitoring and alerting</li>
+  <li>Configure backup strategies for persistent data</li>
+  <li>Use cert-manager for automatic SSL certificates</li>
+</ul>`;
+
+            document.getElementById('config-content').textContent = k8sConfig;
+            document.getElementById('env-content').textContent = envFile;
+            document.getElementById('instructions-content').innerHTML = instructions;
+        }
+
+        function generateStandaloneConfig(config) {
+            document.getElementById('config-title').textContent = 'Standalone Installation';
+            
+            const installScript = `#!/bin/bash
+# Docker Log Summariser Standalone Installation Script
+
+set -e
+
+echo "🚀 Installing Docker Log Summariser..."
+
+# Create application directory
+sudo mkdir -p /opt/docker-log-summariser
+cd /opt/docker-log-summariser
+
+# Download and extract application
+echo "📦 Downloading application..."
+curl -L https://github.com/yourusername/docker-log-summariser/releases/latest/download/docker-log-summariser.tar.gz | tar xz
+
+# Install Node.js dependencies
+echo "📋 Installing dependencies..."
+npm install --production
+
+# Create data directories
+mkdir -p data logs
+
+# Create systemd service
+echo "⚙️ Creating systemd service..."
+sudo tee /etc/systemd/system/docker-log-summariser.service > /dev/null <<EOF
+[Unit]
+Description=Docker Log Summariser
+After=network.target
+
+[Service]
+Type=simple
+User=docker-logs
+Group=docker-logs
+WorkingDirectory=/opt/docker-log-summariser
+Environment=NODE_ENV=production
+Environment=API_PORT=${config.apiPort}
+Environment=MAX_QUEUE_SIZE=${config.maxQueue}
+Environment=DB_PATH=${config.dbPath}
+Environment=LOG_RETENTION_DAYS=${config.retention}
+Environment=AI_PROVIDER=${config.aiProvider}
+${config.aiKey ? `Environment=AI_API_KEY=${config.aiKey}` : '# Environment=AI_API_KEY=your_api_key_here'}
+ExecStart=/usr/bin/node src/index.js --all --api
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create user for the service
+echo "👤 Creating service user..."
+sudo useradd -r -s /bin/false docker-logs || true
+sudo usermod -a -G docker docker-logs
+sudo chown -R docker-logs:docker-logs /opt/docker-log-summariser
+
+# Enable and start service
+echo "🔄 Starting service..."
+sudo systemctl daemon-reload
+sudo systemctl enable docker-log-summariser
+sudo systemctl start docker-log-summariser
+
+echo "✅ Installation complete!"
+echo "📊 Service status: sudo systemctl status docker-log-summariser"
+echo "🌐 API available at: http://localhost:${config.apiPort}"`;
+
+            const envFile = `# Docker Log Summariser Configuration
+# This file is sourced by the systemd service
+
+API_PORT=${config.apiPort}
+MAX_QUEUE_SIZE=${config.maxQueue}
+DB_PATH=${config.dbPath}
+LOG_RETENTION_DAYS=${config.retention}
+AI_PROVIDER=${config.aiProvider}
+${config.aiKey ? `AI_API_KEY=${config.aiKey}` : '# AI_API_KEY=your_api_key_here'}
+
+# Data Source Configuration
+ENABLE_DOCKER_SOURCE=${config.sources.docker}
+ENABLE_FILE_SOURCE=${config.sources.file}
+ENABLE_URL_SOURCE=${config.sources.url}
+ENABLE_SYSLOG_SOURCE=${config.sources.syslog}
+
+# Advanced Configuration
+NODE_ENV=production
+LOG_LEVEL=info
+METRICS_ENABLED=true`;
+
+            const instructions = `<h3>🚀 Standalone Installation Guide</h3>
+<ol class="list-decimal list-inside space-y-2">
+  <li><strong>Prerequisites</strong>: Ensure Node.js 18+ and Docker are installed</li>
+  <li><strong>Save install script</strong>: Save as <code>install.sh</code> and make executable: <code>chmod +x install.sh</code></li>
+  <li><strong>Update API key</strong>: Edit the script to include your AI provider API key</li>
+  <li><strong>Run installation</strong>: <code>sudo ./install.sh</code></li>
+  <li><strong>Verify service</strong>: <code>sudo systemctl status docker-log-summariser</code></li>
+</ol>
+
+<h3 class="mt-6">📋 Service Management</h3>
+<div class="bg-gray-100 p-4 rounded-lg font-mono text-sm space-y-1">
+  <div># Check service status</div>
+  <div>sudo systemctl status docker-log-summariser</div>
+  <div></div>
+  <div># View logs</div>
+  <div>sudo journalctl -u docker-log-summariser -f</div>
+  <div></div>
+  <div># Restart service</div>
+  <div>sudo systemctl restart docker-log-summariser</div>
+  <div></div>
+  <div># Stop service</div>
+  <div>sudo systemctl stop docker-log-summariser</div>
+</div>
+
+<h3 class="mt-6">🔧 Configuration</h3>
+<ul class="list-disc list-inside space-y-1">
+  <li>Configuration file: <code>/opt/docker-log-summariser/.env</code></li>
+  <li>Data directory: <code>/opt/docker-log-summariser/data</code></li>
+  <li>Logs directory: <code>/opt/docker-log-summariser/logs</code></li>
+  <li>Service file: <code>/etc/systemd/system/docker-log-summariser.service</code></li>
+</ul>
+
+<h3 class="mt-6">🔒 Security</h3>
+<ul class="list-disc list-inside space-y-1">
+  <li>Service runs as non-root user: <code>docker-logs</code></li>
+  <li>User is added to docker group for socket access</li>
+  <li>Consider setting up firewall rules</li>
+  <li>Use reverse proxy for SSL termination</li>
+</ul>`;
+
+            document.getElementById('config-content').textContent = installScript;
+            document.getElementById('env-content').textContent = envFile;
+            document.getElementById('instructions-content').innerHTML = instructions;
+        }
+
+        function showConfigTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.config-tab').forEach(tabContent => {
+                tabContent.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById(`config-${tab}`).classList.remove('hidden');
+            
+            // Update tab buttons
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('bg-blue-100', 'text-blue-700');
+                btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            });
+            
+            document.getElementById(`tab-${tab}`).classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            document.getElementById(`tab-${tab}`).classList.add('bg-blue-100', 'text-blue-700');
+        }
+
+        function copyConfig(type) {
+            let content = '';
+            if (type === 'main') {
+                content = document.getElementById('config-content').textContent;
+            } else if (type === 'env') {
+                content = document.getElementById('env-content').textContent;
+            } else if (type === 'instructions') {
+                content = document.getElementById('instructions-content').textContent;
+            }
+
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('bg-green-200', 'text-green-700');
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-200', 'text-green-700');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                }, 2000);
+            }).catch(() => {
+                alert('Configuration copied to clipboard!');
+            });
+        }
+
+        function downloadConfig() {
+            const mainContent = document.getElementById('config-content').textContent;
+            const envContent = document.getElementById('env-content').textContent;
+            
+            let filename1, filename2;
+            if (selectedDeployment === 'docker-compose') {
+                filename1 = 'docker-compose.yml';
+                filename2 = '.env';
+            } else if (selectedDeployment === 'kubernetes') {
+                filename1 = 'docker-log-summariser.yaml';
+                filename2 = '.env';
+            } else {
+                filename1 = 'install.sh';
+                filename2 = '.env';
+            }
+
+            // Download main config
+            const blob1 = new Blob([mainContent], { type: 'text/plain' });
+            const url1 = window.URL.createObjectURL(blob1);
+            const a1 = document.createElement('a');
+            a1.href = url1;
+            a1.download = filename1;
+            a1.click();
+
+            // Download env file
+            setTimeout(() => {
+                const blob2 = new Blob([envContent], { type: 'text/plain' });
+                const url2 = window.URL.createObjectURL(blob2);
+                const a2 = document.createElement('a');
+                a2.href = url2;
+                a2.download = filename2;
+                a2.click();
+            }, 500);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            hljs.highlightAll();
+        });
+    </script>
+</body>
+</html> 

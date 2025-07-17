@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator - LogSense AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'docker-blue': '#2496ED',
+                        'developer': '#3B82F6',
+                        'devops': '#10B981',
+                        'manager': '#8B5CF6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e5e7eb;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .slider:hover {
+            opacity: 1;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2496ED;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2496ED;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .roi-card {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .roi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-docker-blue rounded mr-3"></div>
+                        <span class="text-xl font-bold text-gray-900">LogSense AI</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="demo.html" class="text-gray-700 hover:text-docker-blue transition-colors">← Back to Demo</a>
+                    <button class="bg-docker-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-12 pb-8 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                💰 <span class="gradient-text">ROI Calculator</span>
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Calculate your potential savings with LogSense AI. 
+                See how much time and money your team could save with AI-powered log analysis across any infrastructure.
+            </p>
+        </div>
+    </section>
+
+    <!-- Calculator -->
+    <section class="py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Input Controls -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">📊 Your Team Configuration</h2>
+                    
+                    <!-- Team Size -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            👥 Team Size
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="teamSize" class="slider flex-1" min="2" max="50" value="5" onchange="calculateROI()">
+                            <span id="teamSizeValue" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold min-w-[60px] text-center">5</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Engineers working on your project</p>
+                    </div>
+
+                    <!-- Average Hourly Rate -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            💵 Average Hourly Rate (USD)
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="hourlyRate" class="slider flex-1" min="30" max="200" value="75" onchange="calculateROI()">
+                            <span id="hourlyRateValue" class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold min-w-[70px] text-center">$75</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Blended rate including benefits</p>
+                    </div>
+
+                    <!-- Incidents Per Month -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            🚨 Incidents Per Month
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="incidents" class="slider flex-1" min="5" max="100" value="20" onchange="calculateROI()">
+                            <span id="incidentsValue" class="bg-red-100 text-red-800 px-3 py-1 rounded-full font-semibold min-w-[60px] text-center">20</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Production issues requiring log investigation</p>
+                    </div>
+
+                    <!-- Current Resolution Time -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            ⏱️ Average Resolution Time (Hours)
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="resolutionTime" class="slider flex-1" min="0.5" max="8" step="0.5" value="4" onchange="calculateROI()">
+                            <span id="resolutionTimeValue" class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-semibold min-w-[70px] text-center">4h</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1">Time spent investigating logs per incident</p>
+                    </div>
+
+                    <!-- Quick Presets -->
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🎯 Quick Presets</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <button onclick="setPreset('startup')" class="p-3 border-2 border-blue-200 rounded-lg hover:border-blue-400 transition-colors text-left">
+                                <div class="font-semibold text-blue-700">Startup</div>
+                                <div class="text-xs text-gray-500">3 devs, $65/hr</div>
+                            </button>
+                            <button onclick="setPreset('scaleup')" class="p-3 border-2 border-green-200 rounded-lg hover:border-green-400 transition-colors text-left">
+                                <div class="font-semibold text-green-700">Scale-up</div>
+                                <div class="text-xs text-gray-500">8 devs, $80/hr</div>
+                            </button>
+                            <button onclick="setPreset('enterprise')" class="p-3 border-2 border-purple-200 rounded-lg hover:border-purple-400 transition-colors text-left">
+                                <div class="font-semibold text-purple-700">Enterprise</div>
+                                <div class="text-xs text-gray-500">20 devs, $95/hr</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="space-y-6">
+                    <!-- Current Costs -->
+                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6 roi-card">
+                        <h3 class="text-xl font-bold text-red-700 mb-4">😰 Current Situation</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Time spent on logs/month:</span>
+                                <span id="currentTimeSpent" class="font-semibold text-red-600">80 hours</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Monthly cost:</span>
+                                <span id="currentMonthlyCost" class="font-semibold text-red-600">$6,000</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Annual cost:</span>
+                                <span id="currentAnnualCost" class="font-semibold text-red-600 text-lg">$72,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- With Docker Log Summariser -->
+                    <div class="bg-green-50 border-2 border-green-200 rounded-xl p-6 roi-card">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">✨ With Docker Log Summariser</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Time spent on logs/month:</span>
+                                <span id="newTimeSpent" class="font-semibold text-green-600">2.7 hours</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Monthly cost:</span>
+                                <span id="newMonthlyCost" class="font-semibold text-green-600">$200</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Annual cost:</span>
+                                <span id="newAnnualCost" class="font-semibold text-green-600 text-lg">$2,400</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Savings -->
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 roi-card">
+                        <h3 class="text-xl font-bold mb-4">🎉 Your Savings</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Time saved/month:</span>
+                                <span id="timeSaved" class="font-semibold text-yellow-300">77.3 hours</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Monthly savings:</span>
+                                <span id="monthlySavings" class="font-semibold text-yellow-300">$5,800</span>
+                            </div>
+                            <div class="flex justify-between border-t border-blue-400 pt-3">
+                                <span class="text-lg">Annual savings:</span>
+                                <span id="annualSavings" class="font-bold text-yellow-300 text-2xl">$69,600</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>ROI:</span>
+                                <span id="roiPercentage" class="font-bold text-yellow-300 text-xl">2,900%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Productivity Impact -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6 roi-card">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">📈 Productivity Impact</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-700">Time saved per incident:</span>
+                                    <span class="font-semibold text-blue-600">96.7%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 96.7%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-700">Developer velocity increase:</span>
+                                    <span id="velocityIncrease" class="font-semibold text-green-600">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="velocityBar" class="bg-green-600 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action -->
+                    <div class="bg-gray-900 text-white rounded-xl p-6 text-center">
+                        <h3 class="text-xl font-bold mb-3">Ready to Save <span id="ctaAmount" class="text-yellow-300">$69,600</span> This Year?</h3>
+                        <p class="text-gray-300 mb-4">Start your free trial and begin saving time immediately.</p>
+                        <button class="bg-docker-blue hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                            Start Free Trial →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Methodology -->
+            <div class="mt-16 bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">🔬 Calculation Methodology</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Current State Assumptions</h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-red-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Manual log analysis per incident
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-red-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Multiple engineers involved per incident
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-red-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Context switching overhead
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-red-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Time spent on false leads
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">With Docker Log Summariser</h3>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                <strong>30x faster</strong> incident resolution
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                AI-powered root cause analysis
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Instant actionable insights
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Minimal context switching
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-blue-700">
+                        <strong>Note:</strong> Calculations are based on industry benchmarks and customer data. 
+                        Individual results may vary depending on your specific infrastructure, incident complexity, and team practices.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function calculateROI() {
+            // Get input values
+            const teamSize = parseInt(document.getElementById('teamSize').value);
+            const hourlyRate = parseInt(document.getElementById('hourlyRate').value);
+            const incidents = parseInt(document.getElementById('incidents').value);
+            const resolutionTime = parseFloat(document.getElementById('resolutionTime').value);
+
+            // Update display values
+            document.getElementById('teamSizeValue').textContent = teamSize;
+            document.getElementById('hourlyRateValue').textContent = `$${hourlyRate}`;
+            document.getElementById('incidentsValue').textContent = incidents;
+            document.getElementById('resolutionTimeValue').textContent = `${resolutionTime}h`;
+
+            // Calculate current costs
+            const avgEngineersPerIncident = Math.min(teamSize * 0.6, teamSize); // 60% of team involved on average
+            const currentTimePerMonth = incidents * resolutionTime * avgEngineersPerIncident;
+            const currentMonthlyCost = currentTimePerMonth * hourlyRate;
+            const currentAnnualCost = currentMonthlyCost * 12;
+
+            // Calculate with Docker Log Summariser (30x improvement)
+            const improvementFactor = 30;
+            const newTimePerMonth = currentTimePerMonth / improvementFactor;
+            const newMonthlyCost = newTimePerMonth * hourlyRate;
+            const newAnnualCost = newMonthlyCost * 12;
+
+            // Calculate savings
+            const timeSaved = currentTimePerMonth - newTimePerMonth;
+            const monthlySavings = currentMonthlyCost - newMonthlyCost;
+            const annualSavings = currentAnnualCost - newAnnualCost;
+
+            // Calculate ROI (assuming tool cost of $2,400/year)
+            const toolCost = 2400;
+            const netAnnualSavings = annualSavings - toolCost;
+            const roiPercentage = (netAnnualSavings / toolCost) * 100;
+
+            // Calculate velocity increase
+            const velocityIncrease = Math.min(((timeSaved / currentTimePerMonth) * 100), 95);
+
+            // Update displays
+            document.getElementById('currentTimeSpent').textContent = `${Math.round(currentTimePerMonth)} hours`;
+            document.getElementById('currentMonthlyCost').textContent = `$${Math.round(currentMonthlyCost).toLocaleString()}`;
+            document.getElementById('currentAnnualCost').textContent = `$${Math.round(currentAnnualCost).toLocaleString()}`;
+
+            document.getElementById('newTimeSpent').textContent = `${Math.round(newTimePerMonth * 10) / 10} hours`;
+            document.getElementById('newMonthlyCost').textContent = `$${Math.round(newMonthlyCost).toLocaleString()}`;
+            document.getElementById('newAnnualCost').textContent = `$${Math.round(newAnnualCost).toLocaleString()}`;
+
+            document.getElementById('timeSaved').textContent = `${Math.round(timeSaved * 10) / 10} hours`;
+            document.getElementById('monthlySavings').textContent = `$${Math.round(monthlySavings).toLocaleString()}`;
+            document.getElementById('annualSavings').textContent = `$${Math.round(annualSavings).toLocaleString()}`;
+            document.getElementById('roiPercentage').textContent = `${Math.round(roiPercentage).toLocaleString()}%`;
+
+            document.getElementById('velocityIncrease').textContent = `${Math.round(velocityIncrease)}%`;
+            document.getElementById('velocityBar').style.width = `${velocityIncrease}%`;
+
+            document.getElementById('ctaAmount').textContent = `$${Math.round(annualSavings).toLocaleString()}`;
+        }
+
+        function setPreset(type) {
+            const presets = {
+                startup: { teamSize: 3, hourlyRate: 65, incidents: 15, resolutionTime: 3.5 },
+                scaleup: { teamSize: 8, hourlyRate: 80, incidents: 25, resolutionTime: 4 },
+                enterprise: { teamSize: 20, hourlyRate: 95, incidents: 40, resolutionTime: 4.5 }
+            };
+
+            const preset = presets[type];
+            document.getElementById('teamSize').value = preset.teamSize;
+            document.getElementById('hourlyRate').value = preset.hourlyRate;
+            document.getElementById('incidents').value = preset.incidents;
+            document.getElementById('resolutionTime').value = preset.resolutionTime;
+
+            calculateROI();
+
+            // Add visual feedback
+            const buttons = document.querySelectorAll('[onclick^="setPreset"]');
+            buttons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-400'));
+            event.target.closest('button').classList.add('ring-2', 'ring-blue-400');
+        }
+
+        // Initialize with default values
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateROI();
+        });
+    </script>
+</body>
+</html> 

@@ -16,7 +16,8 @@ beforeAll(async () => {
 
   api = await buildApi({
     dbPath: ':memory:',
-    qaHandler: qaHandlerMock
+    qaHandler: qaHandlerMock,
+    jwtSecret: 'changeme'
   });
   await api.listen({ port: 0 });
 });
