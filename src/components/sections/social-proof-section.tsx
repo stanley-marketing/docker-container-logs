@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 export function SocialProofSection() {
   return (
     <section className="py-16 px-4 bg-gray-50">

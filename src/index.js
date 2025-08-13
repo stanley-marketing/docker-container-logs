@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { LogCollector } from './collector.js';

@@ -1,0 +1,5 @@
+Security Baseline Summary (Wed 13 Aug 2025 16:34:25 IDT):
+- Gitleaks scan: No secrets found
+- Dependency audit: 3 low severity vulnerabilities in socket.io chain (non-critical)
+- Trivy scan: No high/critical vulnerabilities detected
+- Dockerfile: Uses minimal base image, but needs hardening (non-root user)

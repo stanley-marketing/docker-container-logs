@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /**
  * 🧠 Gemini AI Client
  * 

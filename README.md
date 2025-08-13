@@ -1,5 +1,8 @@
 # 🐳 Docker Log Summariser MCP
 
+## About
+General-purpose developer tool for AI-powered Docker log analysis. **No customer data, proprietary prompts, or core product logic.**
+
 > **Transform chaos into clarity.** Stop drowning in log files – get AI-powered summaries of your Docker containers, log files, and remote logs in real-time.
 
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org)
@@ -411,3 +414,12 @@ curl http://localhost:8000/metrics | grep bytes_ingested_total
 
 ### Updated CLI Help
 `npx docker-log-summariser --help` now documents the auto-resume behaviour; there are no new flags, just smarter defaults.
+
+## Configure
+Create `.env` from `.env.example`. Do not commit secrets.
+
+## Safety & Privacy
+Do not upload PII or confidential data. See SECURITY.md.
+
+## License
+MIT. See LICENSE and NOTICE.

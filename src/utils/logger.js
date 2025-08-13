@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /**
  * 📝 Logging utility with structured output
  */

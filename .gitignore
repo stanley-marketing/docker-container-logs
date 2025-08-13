@@ -142,3 +142,10 @@ data
 
 # Explicitly ignore Next.js build output in website sub-app
 website/.next/
+
+# Security - sensitive files
+*.pem
+*.key
+*.p12
+*.sqlite
+.DS_Store

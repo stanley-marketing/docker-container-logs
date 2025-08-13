@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { Button } from "../ui/button";
 
 export function HeroSection() {

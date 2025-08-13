@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /**
  * 🐳 Docker Log Collector & Chunker
  * 

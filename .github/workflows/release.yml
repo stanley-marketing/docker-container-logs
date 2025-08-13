@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with: 
+          output-file: 'SBOM.spdx.json'
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            SBOM.spdx.json
+          generate_release_notes: true

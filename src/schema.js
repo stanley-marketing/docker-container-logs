@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /*
  * 🗂️ Shared JSON Schemas for Fastify route validation
  */

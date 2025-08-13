@@ -4,6 +4,12 @@
   "description": "Stream Docker container logs, summarise with Gemini, allow Q&A",
   "main": "src/index.js",
   "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./collector": "./src/collector.js",
+    "./summariser": "./src/summariser.js"
+  },
+  "sideEffects": false,
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
@@ -52,6 +58,14 @@
     "summarisation",
     "mcp"
   ],
-  "author": "",
+  "author": "Progressus Software Ltd.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stanley-marketing/docker-container-logs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stanley-marketing/docker-container-logs/issues"
+  },
+  "homepage": "https://github.com/stanley-marketing/docker-container-logs#readme",
   "license": "MIT"
 }

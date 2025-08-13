@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /**
  * 📈 Prometheus Metrics Utility
  *

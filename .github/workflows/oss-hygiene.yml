@@ -1,0 +1,46 @@
+name: OSS Hygiene
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --redact --report-format sarif --report-path gitleaks.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gitleaks.sarif
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '22'
+          cache: 'npm'
+      - name: Install & test
+        run: |
+          npm ci
+          npm test --if-present
+          npm run lint --if-present
+
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: github/codeql-action/init@v3
+        with: 
+          languages: 'javascript'
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/analyze@v3

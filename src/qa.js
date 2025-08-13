@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { GeminiClient } from './gemini.js';
 import { logger } from './utils/logger.js';
 import { qaTokensTotal, qaCostUsdTotal } from './metrics.js';

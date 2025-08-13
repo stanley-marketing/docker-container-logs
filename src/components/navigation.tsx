@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Home, Code, Server, Briefcase } from "lucide-react"

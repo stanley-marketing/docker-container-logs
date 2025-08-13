@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { logger } from './utils/logger.js';
 import { vectorQueriesTotal, vectorLatencySeconds } from './metrics.js';
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { Server as SocketIOServer } from 'socket.io';
 import { buildVerifyJwt } from './auth.js';
 import { logger } from './utils/logger.js';

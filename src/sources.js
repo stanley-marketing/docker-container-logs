@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 import { EventEmitter } from 'events';
 import { Chunker } from './collector.js';
 import { logger } from './utils/logger.js';

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 export default function TestPage() {
   return (
     <div className="p-8">
